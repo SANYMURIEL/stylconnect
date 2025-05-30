@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const ProjetSchema = new mongoose.Schema({
   titre: { type: String, required: true },
+  description: { type: String }, // Le champ description est maintenant ici et n'est pas requis
   dateCreation: { type: Date, default: Date.now },
   media: { type: String }, // URL du média (Cloudinary)
   auteurId: {

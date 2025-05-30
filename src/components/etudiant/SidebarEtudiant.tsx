@@ -15,7 +15,7 @@ import defaultProfileImage from "../../../public/images/default.png";
 
 const sidebarItemsEtudiant = [
   { href: "/etudiant/profil", label: "Gérer Profil", icon: FaUserCircle },
-  { href: "/etudiant/creations", label: "Mes Créations", icon: FaPlusSquare },
+  { href: "/etudiant/projets", label: "Mes Créations", icon: FaPlusSquare },
   { href: "/etudiant/messages", label: "Messages", icon: FaEnvelope },
 ];
 

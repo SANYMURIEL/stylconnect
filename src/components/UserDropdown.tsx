@@ -1,15 +1,16 @@
 "use client";
-
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
-import { FiChevronDown, FiLogOut } from "react-icons/fi";
+import { FiChevronDown, FiLogOut, FiTag } from "react-icons/fi";
 import Image from "next/image";
-import img from "../../public/images/default.png"
-export default function UserDropdown({ user }: { user: any }) {
+import img from "../../public/images/default.png";
+
+export default function UserDropdown() {
+  const { data: session } = useSession();
+  const user = session?.user;
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fermer le dropdown quand on clique en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -23,8 +24,10 @@ export default function UserDropdown({ user }: { user: any }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (!user) return null;
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative ml-4" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-4 py-2 bg-pink-100 hover:bg-pink-200 rounded-full text-sm font-medium text-pink-700 transition"
@@ -39,17 +42,31 @@ export default function UserDropdown({ user }: { user: any }) {
         <span className="hidden sm:inline">{user.name}</span>
         <FiChevronDown className="text-pink-500" />
       </button>
-
       {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 shadow-lg rounded-xl z-20 p-4 animate-fadeIn">
-          <div className="mb-3">
+        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 shadow-xl rounded-xl z-20 p-4 animate-fadeIn">
+          <div className="mb-4">
             <p className="text-sm font-semibold text-gray-800">{user.name}</p>
             <p className="text-xs text-gray-500">{user.email}</p>
+            {user.role && (
+              <p className="mt-1 flex items-center gap-1 text-xs text-gray-600">
+                <FiTag className="text-gray-400" size={14} />
+                <span
+                  className={`font-medium ${
+                    user.role === "admin"
+                      ? "text-red-500"
+                      : user.role === "etudiant"
+                      ? "text-blue-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                </span>
+              </p>
+            )}
             <p className="text-xs text-gray-400 mt-1">
               Connecté à : {new Date().toLocaleTimeString()}
             </p>
           </div>
-
           <button
             onClick={() => signOut()}
             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-lg transition duration-150"

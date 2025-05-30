@@ -5,6 +5,17 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   image: String,
-});
+  role: {
+    type: String,
+    enum: ['etudiant', 'recruteur', 'admin'],
+    default: 'recruteur',
+  },
+
+  // Champs spécifiques à chaque rôle
+  bio: { type: String }, // Pour etudiant
+  derniereConnexion: { type: Date }, // Pour admin
+
+  typeEntreprise: { type: String }, // Pour entreprise
+}, { timestamps: true });
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);

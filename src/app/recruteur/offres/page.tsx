@@ -3,10 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import SidebarRecruteur from "@/components/recruteur/SidebarRecruteur"; // Assurez-vous que le chemin est correct
-import OffreList from "@/components/recruteur/offres/OffreList"; // Assurez-vous que le chemin est correct
+import SidebarRecruteur from "@/components/recruteur/SidebarRecruteur";
+import OffreList from "@/components/recruteur/offres/OffreList";
 import { motion } from "framer-motion";
-import { Briefcase } from "lucide-react";
+import { BriefcaseIcon } from "@heroicons/react/24/outline";
 
 const RecruteurOffresPage = () => {
   const { data: session, status } = useSession();
@@ -43,8 +43,8 @@ const RecruteurOffresPage = () => {
         animate="animate"
         exit="exit"
       >
-        Chargement des offres...{" "}
-        <Briefcase className="ml-2 w-6 h-6 animate-pulse" />
+        Chargement des offres...
+        <BriefcaseIcon className="ml-2 w-6 h-6 animate-pulse" />
       </motion.div>
     );
   }
@@ -74,15 +74,18 @@ const RecruteurOffresPage = () => {
 
       {/* Main content */}
       <motion.div
-        className="flex-1 ml-64 p-6 md:p-10"
+        className="flex-1 ml-0 md:ml-64 p-6 md:p-10"
         variants={containerVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <h1 className="text-2xl font-semibold text-pink-500 mb-6">
-          Gestion de mes Offres
-        </h1>
+        <div className="mb-6 flex items-center gap-2">
+          <BriefcaseIcon className="w-8 h-8 text-pink-500" />
+          <h1 className="text-2xl font-semibold text-pink-500">
+            Gestion de mes Offres
+          </h1>
+        </div>
         <OffreList />
       </motion.div>
     </div>

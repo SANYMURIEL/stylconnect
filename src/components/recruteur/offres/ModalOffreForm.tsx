@@ -1,7 +1,9 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BriefcaseIcon } from "@heroicons/react/24/outline"; // Exemple d'icône Heroicons
 
 interface Offre {
   _id?: string;
@@ -110,29 +112,30 @@ const ModalOffreForm = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
             ref={modalRef}
-            className="relative z-10 w-full max-w-md rounded-xl bg-white shadow-xl border border-gray-100"
+            className="relative z-10 w-full max-w-lg rounded-xl bg-white shadow-lg border border-gray-200 overflow-hidden"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-800">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-pink-50">
+              <h2 className="text-lg font-semibold text-pink-700">
+                <BriefcaseIcon className="w-6 h-6 inline mr-2 -mt-0.5" />
                 {editOffre ? "Modifier l'offre" : "Ajouter une offre"}
               </h2>
               <button
                 onClick={onClose}
-                className="hover:bg-gray-100 rounded-md p-1 transition-colors"
+                className="p-1 rounded-md text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -151,7 +154,7 @@ const ModalOffreForm = ({
                   name="titre"
                   value={form.titre}
                   onChange={handleChange}
-                  className="mt-1 block w-full py-2.5 border border-gray-300 text-gray-900 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                  className="mt-1 block w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
                   required
                 />
               </div>
@@ -169,7 +172,7 @@ const ModalOffreForm = ({
                   rows={4}
                   value={form.description}
                   onChange={handleChange}
-                  className="mt-1 block w-full py-2.5 border border-gray-300 text-gray-900 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                  className="mt-1 block w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
                   required
                 />
               </div>
@@ -186,7 +189,7 @@ const ModalOffreForm = ({
                   name="type"
                   value={form.type}
                   onChange={handleTypeChange}
-                  className="mt-1 block w-full py-2.5 border border-gray-300 text-gray-900 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                  className="mt-1 block w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
                 >
                   <option value="emploi">Emploi</option>
                   <option value="stage">Stage</option>
@@ -195,16 +198,16 @@ const ModalOffreForm = ({
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-5 flex justify-end gap-4">
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
               <button
                 onClick={onClose}
-                className="inline-flex items-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
               >
                 Annuler
               </button>
               <button
                 onClick={handleSubmit}
-                className="inline-flex items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-pink-500 text-sm font-medium text-white hover:bg-pink-600 focus:outline-none focus:ring-pink-500 focus:ring-offset-2 transition-colors"
+                className="inline-flex items-center rounded-md border border-transparent bg-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
               >
                 {editOffre ? "Enregistrer" : "Ajouter"}
               </button>

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { Pencil, Trash2, Plus, Search, CheckCircle, Clock } from "lucide-react";
 import { motion } from "framer-motion";
-import ModalOffreForm from "@/components/recruteur/offres/ModalOffreForm"; 
+import ModalOffreForm from "@/components/recruteur/offres/ModalOffreForm";
+import { BriefcaseIcon } from "@heroicons/react/24/outline";
+import { FaCheckCircle, FaClock } from "react-icons/fa";
 
 interface Offre {
   _id?: string;
@@ -21,6 +23,10 @@ const OffreList = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editOffre, setEditOffre] = useState<Offre | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "en attente" | "approuve"
+  >("all");
 
   const fetchOffres = async () => {
     try {
@@ -62,47 +68,145 @@ const OffreList = () => {
     setIsModalOpen(true);
   };
 
+  const filteredOffres = useMemo(() => {
+    return offres.filter((offre) => {
+      const searchMatch =
+        offre.titre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        offre.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const statusMatch =
+        filterStatus === "all" || offre.statut === filterStatus;
+      return searchMatch && statusMatch;
+    });
+  }, [offres, searchQuery, filterStatus]);
+
+  const totalOffres = offres.length;
+  const offresEnAttente = offres.filter(
+    (offre) => offre.statut === "en attente"
+  ).length;
+  const offresApprouvees = offres.filter(
+    (offre) => offre.statut === "approuve"
+  ).length;
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", damping: 15, stiffness: 100 },
+    },
+  };
+
   return (
     <section className="space-y-6">
-      <div className="flex justify-end">
+      {/* Top Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <motion.div
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex items-center justify-between"
+        >
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Total des offres
+            </p>
+            <p className="text-xl font-semibold text-pink-500">{totalOffres}</p>
+          </div>
+          <BriefcaseIcon className="w-8 h-8 text-pink-300" />
+        </motion.div>
+        <motion.div
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex items-center justify-between"
+        >
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Offres en attente
+            </p>
+            <p className="text-xl font-semibold text-orange-500">
+              {offresEnAttente}
+            </p>
+          </div>
+          <FaClock className="w-8 h-8 text-orange-300" />
+        </motion.div>
+        <motion.div
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex items-center justify-between"
+        >
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Offres approuvées
+            </p>
+            <p className="text-xl font-semibold text-green-500">
+              {offresApprouvees}
+            </p>
+          </div>
+          <FaCheckCircle className="w-8 h-8 text-green-300" />
+        </motion.div>
+      </div>
+
+      {/* Search and Filter */}
+      <div className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex items-center justify-between">
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 text-sm"
+            placeholder="Rechercher un titre ou une description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="ml-4">
+          <select
+            value={filterStatus}
+            onChange={(e) =>
+              setFilterStatus(
+                e.target.value as "all" | "en attente" | "approuve"
+              )
+            }
+            className="py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 text-sm"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="en attente">En attente</option>
+            <option value="approuve">Approuvées</option>
+          </select>
+        </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition duration-200"
+          className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-md transition duration-150"
           onClick={openAddModal}
         >
-          <motion.span
-            initial={{ rotate: 0 }}
-            whileHover={{ rotate: 90 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="text-white"
-          >
-            <Plus className="w-5 h-5" />
-          </motion.span>
-          <span>Ajouter une offre</span>
+          <Plus className="w-5 h-5" />
+          <span>Ajouter</span>
         </motion.button>
       </div>
 
-      <div className="overflow-auto rounded-xl shadow-md border border-gray-200 bg-white">
+      {/* Offer List Table */}
+      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white">
         <table className="min-w-full table-auto">
           <thead className="bg-pink-50 border-b border-pink-100 text-gray-700">
             <tr>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Titre
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
                 Description
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Type
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
-                Date de Publication
+              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
+                Publication
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Statut
               </th>
-              <th className="text-center text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -121,37 +225,52 @@ const OffreList = () => {
                 </td>
               </tr>
             ) : (
-              offres.map((offre) => (
-                <tr
+              filteredOffres.map((offre) => (
+                <motion.tr
                   key={offre._id}
-                  className="border-b border-gray-200 hover:bg-pink-50/10 transition text-gray-800"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.15, ease: "easeInOut" }}
+                  className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
                 >
-                  <td className="px-6 py-4 text-sm truncate max-w-xs">
+                  <td className="px-4 py-3 text-sm truncate max-w-xs">
                     {offre.titre}
                   </td>
-                  <td className="px-6 py-4 text-sm truncate max-w-md">
+                  <td className="px-4 py-3 text-sm truncate max-w-md hidden md:table-cell">
                     {offre.description}
                   </td>
-                  <td className="px-6 py-4 text-sm">{offre.type}</td>
-                  <td className="px-6 py-4 text-sm">
+                  <td className="px-4 py-3 text-sm">{offre.type}</td>
+                  <td className="px-4 py-3 text-sm hidden sm:table-cell">
                     {offre.datePublication
                       ? new Date(offre.datePublication).toLocaleDateString()
                       : "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-sm">{offre.statut}</td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center gap-4">
+                  <td className="px-4 py-3 text-sm">
+                    {offre.statut === "approuve" ? (
+                      <div className="flex items-center gap-1 text-green-500">
+                        <FaCheckCircle className="w-4 h-4" /> Approuvée
+                      </div>
+                    ) : offre.statut === "en attente" ? (
+                      <div className="flex items-center gap-1 text-orange-500">
+                        <FaClock className="w-4 h-4 animate-pulse" /> En attente
+                      </div>
+                    ) : (
+                      offre.statut
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center gap-2">
                       <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        className="text-indigo-500 hover:text-indigo-600"
+                        whileHover={{ scale: 1.1 }}
+                        className="text-indigo-500 hover:text-indigo-600 focus:outline-none"
                         title="Modifier"
                         onClick={() => openEditModal(offre)}
                       >
                         <Pencil className="w-5 h-5" />
                       </motion.button>
                       <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        className="text-red-500 hover:text-red-600"
+                        whileHover={{ scale: 1.1 }}
+                        className="text-red-500 hover:text-red-600 focus:outline-none"
                         title="Supprimer"
                         onClick={() => handleDelete(offre._id!)}
                       >
@@ -159,7 +278,7 @@ const OffreList = () => {
                       </motion.button>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))
             )}
           </tbody>

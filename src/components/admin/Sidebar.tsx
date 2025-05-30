@@ -1,14 +1,20 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { FaUsers, FaFileAlt, FaNewspaper, FaArrowLeft } from "react-icons/fa"; // Utilisez les icônes Fa
+import {
+  FaUsers,
+  FaBriefcase,
+  FaLightbulb,
+  FaNewspaper,
+  FaArrowLeft,
+} from "react-icons/fa"; // Importez les icônes spécifiques
 
 const sidebarItems = [
   { href: "/admin/users", label: "Utilisateurs", icon: FaUsers },
-  { href: "/admin/publications", label: "Publications", icon: FaFileAlt },
+  { href: "/admin/offres", label: "Offres", icon: FaBriefcase }, // Onglet Offres
+  { href: "/admin/projets", label: "Projets", icon: FaLightbulb }, // Onglet Projets
   { href: "/admin/actualites", label: "Actualités", icon: FaNewspaper },
 ];
 
@@ -27,7 +33,7 @@ const Sidebar = () => {
 
         <nav className="space-y-2">
           {sidebarItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href;
+            const isActive = pathname.startsWith(href); // Vérifiez si le chemin commence par l'href
             return (
               <Link
                 key={label}

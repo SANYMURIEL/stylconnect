@@ -247,7 +247,7 @@ export default function HomePage() {
             </div>
             <div className="text-center mt-8">
               <Link
-                href="/galerie"
+                href="/creations"
                 className="inline-flex items-center gap-2 bg-pink-500 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-600 transition-colors duration-300 shadow-md"
               >
                 Explorer toute la galerie <ArrowRight className="w-5 h-5" />
@@ -276,64 +276,12 @@ export default function HomePage() {
               <p>Découvrez l'inspiration et les dernières tendances du CFPD.</p>
             </div>
             <div className="mt-8">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-700 transition-colors duration-300 shadow-md"
-              >
-                Rejoignez Styl'Connect{" "}
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </Link>
+              
             </div>
           </div>
         </section>
 
-        {/* Témoignages */}
-        <section className="py-12 px-6 md:px-12 lg:px-20 bg-gray-100">
-          <div className="max-w-6xl mx-auto py-8">
-            <motion.h2
-              className="text-2xl font-bold text-pink-600 mb-6 text-center"
-              variants={titleVariants}
-              initial="initial"
-              animate="animate"
-            >
-              Ce qu'ils disent de Styl'Connect...
-            </motion.h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {temoignagesData.map((temoignage) => (
-                <motion.div
-                  key={temoignage._id}
-                  className="bg-white rounded-xl shadow-md p-6"
-                  variants={cardVariants}
-                  initial="initial"
-                  animate="animate"
-                >
-                  <p className="text-gray-700 italic mb-4">
-                    "{temoignage.texte}"
-                  </p>
-                  <div className="font-semibold text-gray-800">
-                    - {temoignage.auteur},{" "}
-                    <span className="text-gray-600 font-normal">
-                      {temoignage.role}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+       
 
         {/* Section Actualités (existante) */}
         <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">

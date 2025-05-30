@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Pencil, Trash2, Plus, Search, CheckCircle, Clock } from "lucide-react";
+import { Pencil, Trash2, Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import ModalOffreForm from "@/components/recruteur/offres/ModalOffreForm";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
@@ -97,9 +97,10 @@ const OffreList = () => {
   };
 
   return (
-    <section className="space-y-6">
+    <div className="flex flex-col h-full space-y-6">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* ... (cartes du haut inchangées) ... */}
         <motion.div
           variants={cardVariants}
           initial="initial"
@@ -149,8 +150,8 @@ const OffreList = () => {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex items-center justify-between">
-        <div className="relative flex-grow">
+      <div className="bg-white rounded-lg shadow-md border border-gray-100 p-4 flex flex-col md:flex-row items-center justify-between gap-y-2 md:gap-0">
+        <div className="relative flex-grow md:mr-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
@@ -160,7 +161,7 @@ const OffreList = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="ml-4">
+        <div className="ml-0 md:ml-4">
           <select
             value={filterStatus}
             onChange={(e) =>
@@ -178,7 +179,7 @@ const OffreList = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
-          className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-md transition duration-150"
+          className="mt-2 md:mt-0 ml-0 md:ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-md transition duration-150"
           onClick={openAddModal}
         >
           <Plus className="w-5 h-5" />
@@ -187,26 +188,26 @@ const OffreList = () => {
       </div>
 
       {/* Offer List Table */}
-      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white">
+      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white flex-1">
         <table className="min-w-full table-auto">
           <thead className="bg-pink-50 border-b border-pink-100 text-gray-700">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
+              <th className="px-2 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Titre
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
+              <th className="px-2 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
                 Description
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
+              <th className="px-2 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Type
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
+              <th className="px-2 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
                 Publication
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
+              <th className="px-2 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Statut
               </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
+              <th className="px-2 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -233,19 +234,19 @@ const OffreList = () => {
                   transition={{ duration: 0.15, ease: "easeInOut" }}
                   className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
                 >
-                  <td className="px-4 py-3 text-sm truncate max-w-xs">
+                  <td className="px-2 py-3 text-sm truncate max-w-[120px]">
                     {offre.titre}
                   </td>
-                  <td className="px-4 py-3 text-sm truncate max-w-md hidden md:table-cell">
+                  <td className="px-2 py-3 text-sm truncate max-w-[200px] hidden md:table-cell">
                     {offre.description}
                   </td>
-                  <td className="px-4 py-3 text-sm">{offre.type}</td>
-                  <td className="px-4 py-3 text-sm hidden sm:table-cell">
+                  <td className="px-2 py-3 text-sm">{offre.type}</td>
+                  <td className="px-2 py-3 text-sm hidden lg:table-cell">
                     {offre.datePublication
                       ? new Date(offre.datePublication).toLocaleDateString()
                       : "N/A"}
                   </td>
-                  <td className="px-4 py-3 text-sm">
+                  <td className="px-2 py-3 text-sm">
                     {offre.statut === "approuve" ? (
                       <div className="flex items-center gap-1 text-green-500">
                         <FaCheckCircle className="w-4 h-4" /> Approuvée
@@ -258,23 +259,23 @@ const OffreList = () => {
                       offre.statut
                     )}
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex justify-center gap-2">
+                  <td className="px-2 py-3 text-center whitespace-nowrap">
+                    <div className="flex justify-center gap-1">
                       <motion.button
                         whileHover={{ scale: 1.1 }}
-                        className="text-indigo-500 hover:text-indigo-600 focus:outline-none"
+                        className="text-indigo-500 hover:text-indigo-600 focus:outline-none p-1"
                         title="Modifier"
                         onClick={() => openEditModal(offre)}
                       >
-                        <Pencil className="w-5 h-5" />
+                        <Pencil className="w-4 h-4" />
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
-                        className="text-red-500 hover:text-red-600 focus:outline-none"
+                        className="text-red-500 hover:text-red-600 focus:outline-none p-1"
                         title="Supprimer"
                         onClick={() => handleDelete(offre._id!)}
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </motion.button>
                     </div>
                   </td>
@@ -291,7 +292,7 @@ const OffreList = () => {
         onSave={fetchOffres}
         editOffre={editOffre}
       />
-    </section>
+    </div>
   );
 };
 

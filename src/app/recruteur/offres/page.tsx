@@ -68,13 +68,15 @@ const RecruteurOffresPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 text-gray-800">
+    <div className="min-h-screen bg-gray-100 text-gray-800 flex">
       {/* Sidebar */}
-      <SidebarRecruteur />
+      <div className="md:w-64 flex-shrink-0">
+        <SidebarRecruteur />
+      </div>
 
       {/* Main content */}
       <motion.div
-        className="flex-1 ml-0 md:ml-64 p-6 md:p-10"
+        className="flex-1 p-6 md:p-10 flex flex-col h-full"
         variants={containerVariants}
         initial="initial"
         animate="animate"
@@ -89,6 +91,7 @@ const RecruteurOffresPage = () => {
         <OffreList />
       </motion.div>
     </div>
+   
   );
 };
 

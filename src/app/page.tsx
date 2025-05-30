@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,40 +6,61 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroImage from "../../public/images/essai.png";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "react-feather"; // Import de l'icône
+import { ArrowRight } from "react-feather";
+import Link from "next/link";
+
 
 interface Actualite {
-  _id: string;
-  titre: string;
-  description: string;
-  media?: string;
-  datePublication: string;
+    _id: string;
+    titre: string;
+    description: string;
+    media?: string;
+    datePublication: string;
+}
+
+interface ProjetEtudiant {
+    _id: string;
+    nom: string;
+    image: string;
+    descriptionCourte: string;
+    lien: string;
+}
+
+interface Temoignage {
+    _id: string;
+    auteur: string;
+    texte: string;
+    role: string;
 }
 
 const cardVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeIn" } },
-};
-
-const sectionVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: { delayChildren: 0.2, staggerChildren: 0.1 },
-  },
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeIn" } },
 };
 
 const titleVariants = {
-  initial: { opacity: 0, y: -10 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    initial: { opacity: 0, y: -10 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 const loadingErrorVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.2 } },
-  exit: { opacity: 0 },
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.2 } },
+    exit: { opacity: 0 },
 };
+
+// Données de test pour les projets et témoignages (à remplacer par des données réelles)
+const projetsEtudiantsData: ProjetEtudiant[] = [
+    { _id: "1", nom: "Projet A", image: "/images/placeholder.jpg", descriptionCourte: "Description courte du projet A.", lien: "/projet/a" },
+    { _id: "2", nom: "Projet B", image: "/images/placeholder2.jpg", descriptionCourte: "Description courte du projet B.", lien: "/projet/b" },
+    { _id: "3", nom: "Projet C", image: "/images/placeholder3.jpg", descriptionCourte: "Description courte du projet C.", lien: "/projet/c" },
+];
+
+const temoignagesData: Temoignage[] = [
+    { _id: "t1", auteur: "Alice Dupont", texte: "Styl'Connect m'a permis de montrer mon travail et d'obtenir des opportunités !", role: "Étudiante" },
+    { _id: "t2", auteur: "Jean Martin", texte: "Une plateforme idéale pour découvrir de jeunes talents créatifs.", role: "Recruteur" },
+];
 
 export default function HomePage() {
   const [actualites, setActualites] = useState<Actualite[]>([]);
@@ -73,18 +93,18 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <div className="bg-pink-50 min-h-screen flex flex-col">
       <Navbar />
       <motion.main
-        className="bg-gradient-to-b from-pink-50 to-white min-h-screen"
+        className="flex-grow"
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
           transition: { duration: 0.8, ease: "easeInOut" },
         }}
       >
-        {/* Hero Section (comme avant) */}
-                <section className="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-20">
+        {/* Hero Section */}
+        <section className="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-20">
           <div className="grid md:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
             <motion.div
               className="text-center md:text-left space-y-8"
@@ -128,7 +148,7 @@ export default function HomePage() {
                       strokeWidth="2"
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-2.018 8-7.542 8-5.52 0-8.792-3.943-7.518-8z"
                     />
-                  </svg>{" "}
+                  </svg>
                   Explorer les créations
                 </a>
                 <a
@@ -148,7 +168,7 @@ export default function HomePage() {
                       strokeWidth="2"
                       d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
-                  </svg>{" "}
+                  </svg>
                   Rejoindre la communauté
                 </a>
               </div>
@@ -179,9 +199,145 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Actualités Section (mise à jour) */}
-        <section className="py-12 px-6 md:px-12 lg:px-20 bg-pink-50">
-          <div className="max-w-6xl mx-auto rounded-xl bg-white shadow-lg overflow-hidden">
+        {/* Mise en avant des projets étudiants */}
+        <section className="py-12 px-6 md:px-12 lg:px-20 bg-gray-50">
+          <div className="max-w-6xl mx-auto py-8">
+            <motion.h2
+              className="text-2xl font-bold text-pink-600 mb-6 text-center"
+              variants={titleVariants}
+              initial="initial"
+              animate="animate"
+            >
+              Projets Étudiants en Vedette
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projetsEtudiantsData.map((projet) => (
+                <motion.div
+                  key={projet._id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                >
+                  <div className="aspect-w-16 aspect-h-9">
+                    <Image
+                      src={projet.image}
+                      alt={projet.nom}
+                      className="object-cover w-full h-full"
+                      width={600}
+                      height={400}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-800 mb-2">
+                      {projet.nom}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {projet.descriptionCourte}
+                    </p>
+                    <Link
+                      href={projet.lien}
+                      className="text-pink-600 hover:text-pink-700 font-medium"
+                    >
+                      Voir plus <ArrowRight className="inline w-4 h-4 ml-1" />
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link
+                href="/galerie"
+                className="inline-flex items-center gap-2 bg-pink-500 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-600 transition-colors duration-300 shadow-md"
+              >
+                Explorer toute la galerie <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Pourquoi Styl'Connect ? */}
+        <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">
+          <div className="max-w-3xl mx-auto text-center py-8">
+            <motion.h2
+              className="text-2xl font-bold text-pink-600 mb-6"
+              variants={titleVariants}
+              initial="initial"
+              animate="animate"
+            >
+              Pourquoi choisir Styl'Connect ?
+            </motion.h2>
+            <div className="space-y-4 text-lg text-gray-700">
+              <p>Connectez-vous avec une communauté créative et passionnée.</p>
+              <p>
+                Mettez en valeur votre talent et vos projets auprès d'un public
+                intéressé.
+              </p>
+              <p>Découvrez l'inspiration et les dernières tendances du CFPD.</p>
+            </div>
+            <div className="mt-8">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-700 transition-colors duration-300 shadow-md"
+              >
+                Rejoignez Styl'Connect{" "}
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Témoignages */}
+        <section className="py-12 px-6 md:px-12 lg:px-20 bg-gray-100">
+          <div className="max-w-6xl mx-auto py-8">
+            <motion.h2
+              className="text-2xl font-bold text-pink-600 mb-6 text-center"
+              variants={titleVariants}
+              initial="initial"
+              animate="animate"
+            >
+              Ce qu'ils disent de Styl'Connect...
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {temoignagesData.map((temoignage) => (
+                <motion.div
+                  key={temoignage._id}
+                  className="bg-white rounded-xl shadow-md p-6"
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                >
+                  <p className="text-gray-700 italic mb-4">
+                    "{temoignage.texte}"
+                  </p>
+                  <div className="font-semibold text-gray-800">
+                    - {temoignage.auteur},{" "}
+                    <span className="text-gray-600 font-normal">
+                      {temoignage.role}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section Actualités (existante) */}
+        <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">
+          <div className="max-w-6xl mx-auto rounded-xl shadow-lg overflow-hidden">
             <div className="p-8">
               <motion.h2
                 className="text-2xl font-bold text-pink-600 mb-6 text-center"
@@ -274,7 +430,6 @@ export default function HomePage() {
                                 src={actu.media}
                                 alt={actu.titre}
                                 className="object-cover w-full h-full"
-                                fill
                               />
                             </div>
                           )}
@@ -298,8 +453,7 @@ export default function HomePage() {
                         className="inline-flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200"
                       >
                         Toutes les actualités
-                        <ArrowRight className="w-4 h-4" />{" "}
-                        {/* Utilisation de React Icon */}
+                        <ArrowRight className="w-4 h-4" />
                       </a>
                     </div>
                   )}
@@ -310,6 +464,6 @@ export default function HomePage() {
         </section>
       </motion.main>
       <Footer />
-    </>
+    </div>
   );
 }

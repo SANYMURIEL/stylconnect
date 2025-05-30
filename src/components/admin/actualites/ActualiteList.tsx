@@ -82,23 +82,23 @@ const ActualiteList = () => {
         </motion.button>
       </div>
 
-      <div className="overflow-auto rounded-xl shadow-md border border-gray-200 bg-white">
+      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white">
         <table className="min-w-full table-auto">
           <thead className="bg-pink-50 border-b border-pink-100 text-gray-700">
             <tr>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-pink-500 uppercase tracking-wider">
                 Titre
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
                 Description
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
                 Média
               </th>
-              <th className="text-left text-sm font-semibold text-pink-500 px-6 py-4">
-                Date de Publication
+              <th className="px-4 py-3 text-left text-sm font-semibold text-pink-500 uppercase tracking-wider">
+                Publication
               </th>
-              <th className="text-center text-sm font-semibold text-pink-500 px-6 py-4">
+              <th className="px-4 py-3 text-center text-sm font-semibold text-pink-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -122,43 +122,45 @@ const ActualiteList = () => {
                   key={actualite._id}
                   className="border-b border-gray-200 hover:bg-pink-50/10 transition text-gray-800"
                 >
-                  <td className="px-6 py-4 text-sm truncate max-w-xs">
+                  <td className="px-4 py-3 text-sm truncate max-w-[200px]">
                     {actualite.titre}
                   </td>
-                  <td className="px-6 py-4 text-sm truncate max-w-md">
+                  <td className="px-4 py-3 text-sm truncate max-w-[300px] hidden md:table-cell">
                     {actualite.description}
                   </td>
-                  <td className="px-6 py-4 text-sm">
+                  <td className="px-4 py-3 text-sm hidden lg:table-cell">
                     {actualite.media ? (
-                      <img
-                        src={actualite.media}
-                        alt={actualite.titre}
-                        className="h-16 w-24 object-cover rounded-md shadow"
-                      />
+                      <div className="h-16 w-24 overflow-hidden rounded-md shadow">
+                        <img
+                          src={actualite.media}
+                          alt={actualite.titre}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
                     ) : (
                       <span className="text-gray-400 italic">Aucune image</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm">
+                  <td className="px-4 py-3 text-sm whitespace-nowrap">
                     {new Date(actualite.datePublication).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center gap-4">
+                  <td className="px-4 py-3 text-center whitespace-nowrap">
+                    <div className="flex justify-center gap-2">
                       <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        className="text-indigo-500 hover:text-indigo-600"
+                        whileHover={{ scale: 1.1 }}
+                        className="text-indigo-500 hover:text-indigo-600 focus:outline-none p-1"
                         title="Modifier"
                         onClick={() => openEditModal(actualite)}
                       >
-                        <Pencil className="w-5 h-5" />
+                        <Pencil className="w-4 h-4" />
                       </motion.button>
                       <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        className="text-red-500 hover:text-red-600"
+                        whileHover={{ scale: 1.1 }}
+                        className="text-red-500 hover:text-red-600 focus:outline-none p-1"
                         title="Supprimer"
                         onClick={() => handleDelete(actualite._id)}
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </motion.button>
                     </div>
                   </td>

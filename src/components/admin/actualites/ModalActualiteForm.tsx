@@ -185,7 +185,8 @@ const ModalActualiteForm = ({
             </div>
 
             {/* Body */}
-            <div className="p-6 space-y-4">
+            {/* Body */}
+            <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(100vh-200px)]">
               <div>
                 <label
                   htmlFor="titre"
@@ -237,7 +238,7 @@ const ModalActualiteForm = ({
                   className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
                 />
                 {editActualite?.media && !selectedImage && (
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 overflow-x-auto">
                     Image actuelle: {editActualite.media}
                   </p>
                 )}

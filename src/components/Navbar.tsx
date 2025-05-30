@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import UserDropdown from "./UserDropdown";
 import {
@@ -14,26 +14,37 @@ import {
   FaUserCog,
   FaBars,
   FaTimes,
-  FaTachometerAlt, 
+  FaTachometerAlt,
 } from "react-icons/fa";
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const navItems = [
     { href: "/", label: "Accueil", icon: <FaHome /> },
     { href: "/creations", label: "Créations", icon: <FaPalette /> },
     { href: "/actualites", label: "Actualités", icon: <FaNewspaper /> },
     { href: "/apropos", label: "À propos", icon: <FaInfoCircle /> },
-    ...(session?.user?.role === "admin"
+    ...(status === "loading" || !isClient
+      ? []
+      : session?.user?.role === "admin"
       ? [{ href: "/admin/users", label: "Admin", icon: <FaUserCog /> }]
       : []),
-    ...(session?.user
+    ...(status === "loading" || !isClient
+      ? []
+      : session?.user
       ? [{ href: "/opportunites", label: "Opportunités", icon: <FaBullhorn /> }]
       : []),
-    ...(session?.user?.role === "recruteur"
+    ...(status === "loading" || !isClient
+      ? []
+      : session?.user?.role === "recruteur"
       ? [
           {
             href: "/recruteur/offres",
@@ -42,10 +53,12 @@ export default function Navbar() {
           },
         ]
       : []),
-    ...(session?.user?.role === "etudiant"
+    ...(status === "loading" || !isClient
+      ? []
+      : session?.user?.role === "etudiant"
       ? [
           {
-            href: "/etudiant/profil", 
+            href: "/etudiant/profil",
             label: "Tableau de bord",
             icon: <FaTachometerAlt />,
           },
@@ -86,7 +99,26 @@ export default function Navbar() {
 
         {/* Auth / Dropdown */}
         <div className="hidden md:flex items-center gap-4">
-          {!session?.user ? (
+          {status === "loading" || !isClient ? (
+            <svg
+              className="animate-spin h-5 w-5 text-pink-500"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          ) : !session?.user ? (
             <>
               <Link
                 href="/login"
@@ -134,7 +166,28 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {!session?.user ? (
+            {status === "loading" || !isClient ? (
+              <div className="flex justify-center py-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-pink-500"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </div>
+            ) : !session?.user ? (
               <>
                 <Link
                   href="/login"

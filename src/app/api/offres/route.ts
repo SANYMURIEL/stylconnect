@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectToDB();
-    const offres = await Offre.find({ statut: 'approuve' }).populate('idRecruteur', 'name');
+    const offres = await Offre.find({ statut: 'approuve' }).populate('idRecruteur', 'name email');
     return NextResponse.json(offres);
   } catch (error) {console.error("Erreur lors de la récupération des offres:", error);
     return NextResponse.json({ message: 'Erreur lors de la récupération des offres.' }, { status: 500 });

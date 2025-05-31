@@ -98,14 +98,6 @@ const OffresPage = () => {
     document.body.style.overflow = "auto";
   };
 
-  const handlePostuler = () => {
-    if (selectedOffre) {
-      alert(`Postuler à : ${selectedOffre.titre}`);
-      console.log("Postuler à l'offre :", selectedOffre);
-      // Logique de postulation ici
-    }
-  };
-
   const cardVariants = {
     initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
@@ -149,6 +141,38 @@ const OffresPage = () => {
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
+
+  //envoi email
+  const handlePostuler = async () => {
+    if (!selectedOffre || !session?.user) return;
+  
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: selectedOffre.idRecruteur.email,
+          subject: `Nouvelle candidature pour ${selectedOffre.titre}`,
+          html: `
+            <h1>Nouvelle candidature</h1>
+            <p>Étudiant: ${session.user.name}</p>
+            <p>Email: ${session.user.email}</p>
+            <p>Offre: ${selectedOffre.titre}</p>
+            <p>Date: ${new Date().toLocaleDateString()}</p>
+          `
+        })
+      });
+  
+      if (!response.ok) throw new Error('Échec de l\'envoi');
+      alert('Candidature envoyée avec succès !');
+    } catch (error) {
+      console.error(error);
+      alert('Erreur lors de l\'envoi de la candidature');
+    }
+  };
+  
 
   // Rendu conditionnel basé sur l'état de l'authentification
   if (status === "loading") {

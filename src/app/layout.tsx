@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: "Plateforme de stylisme",
 };
 
+
 export default function RootLayout({
   children,
 }: {

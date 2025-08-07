@@ -1,23 +1,39 @@
-// models/Projet.ts
+// models/Projet.ts (ou le nom de votre fichier de modèle)
 import mongoose from 'mongoose';
 
-const ProjetSchema = new mongoose.Schema({
-    titre: { type: String, required: true },
-    description: { type: String }, // Le champ description est maintenant ici et n'est pas requis
-    dateCreation: { type: Date, default: Date.now },
-    media: { type: String }, // URL du média (Cloudinary)
-    auteurId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    likes: { type: Number, default: 0 },
-    likesBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Ajout de ce champ pour suivre les likes par utilisateur
-    statut: {
-        type: String,
-        enum: ['approuve', 'en attente'],
-        default: 'en attente',
-    },
+const projetSchema = new mongoose.Schema({
+  titre: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  media: {
+    type: String,
+    required: true,
+  },
+  auteurId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  statut: {
+    type: String,
+    enum: ['en_attente', 'approuve', 'refuse'],
+    default: 'en_attente',
+  },
+  // Champs pour les likes
+  likesBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'User',
+    default: [], // Le tableau doit être initialisé comme vide
+  },
+  likes: {
+    type: Number,
+    default: 0, // Le compteur de likes doit être initialisé à 0
+  },
 }, { timestamps: true });
 
-export const Projet = mongoose.models.Projet || mongoose.model('Projet', ProjetSchema);
+export const Projet = mongoose.models.Projet || mongoose.model('Projet', projetSchema);

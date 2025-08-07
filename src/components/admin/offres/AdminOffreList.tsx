@@ -10,18 +10,18 @@ import { FaCheckCircle as FaCheckCircleSolid, FaClock } from "react-icons/fa";
 import { CheckCircle } from "lucide-react";
 
 interface Offre {
-    _id?: string;
-    titre: string;
-    description: string;
-    type: "stage" | "emploi";
-    datePublication?: string;
-    statut?: "approuve" | "en attente";
-    idRecruteur?: any;
-    recruteur?: {
-        _id: string;
-        nom: string;
-        email: string;
-    };
+  _id?: string;
+  titre: string;
+  description: string;
+  type: "stage" | "emploi";
+  datePublication?: string;
+  statut?: "approuve" | "en attente";
+  idRecruteur?: any;
+  recruteur?: {
+    _id: string;
+    nom: string;
+    email: string;
+  };
 }
 
 const AdminOffreList = () => {
@@ -31,9 +31,8 @@ const AdminOffreList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editOffre, setEditOffre] = useState<Offre | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "en attente" | "approuve"
-  >("all");
+  const [filterStatus, setFilterStatus] =
+    useState<"all" | "en attente" | "approuve">("all");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedOffreDetails, setSelectedOffreDetails] =
     useState<Offre | null>(null);
@@ -254,129 +253,134 @@ const AdminOffreList = () => {
       </div>
 
       {/* Offer List Table */}
-      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white flex-1">
-        <table className="min-w-full table-auto">
-          <thead className="bg-pink-50 border-b border-pink-100 text-gray-700">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
-                Titre
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
-                Type
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
-                Statut
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
-                Recruteur
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence>
-              {loading ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-gray-500"
-                    colSpan={5}
-                  >
-                    Chargement...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-red-500"
-                    colSpan={5}
-                  >
-                    Erreur: {error}
-                  </td>
-                </tr>
-              ) : filteredOffres.length === 0 ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-gray-500"
-                    colSpan={5}
-                  >
-                    Aucune offre trouvée.
-                  </td>
-                </tr>
-              ) : (
-                filteredOffres.map((offre) => (
-                  <motion.tr
-                    key={offre._id}
-                    variants={rowVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
-                  >
-                    <td className="px-4 py-3 text-sm font-medium">
-                      {offre.titre}
+      {/* --- RETRAIT DU rounded-xl ici --- */}
+      <div className="overflow-x-auto shadow-md border border-gray-200 bg-white flex-1">
+        {/* --- Ajout de max-h et custom-scrollbar pour afficher 5 éléments et avoir la scrollbar rose --- */}
+        <div className="max-h-[275px] overflow-y-auto custom-scrollbar">
+          <table className="min-w-full table-auto">
+            {/* --- Correction de l'erreur d'hydratation et centrage des en-têtes --- */}
+            <thead className="bg-pink-50 border-b border-pink-100 text-gray-700 sticky top-0 z-10">
+              <tr>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
+                  Titre
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
+                  Type
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
+                  Statut
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
+                  Recruteur
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {loading ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-gray-500"
+                      colSpan={5}
+                    >
+                      Chargement...
                     </td>
-                    <td className="px-4 py-3 text-sm capitalize hidden sm:table-cell">
-                      {offre.type}
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-red-500"
+                      colSpan={5}
+                    >
+                      Erreur: {error}
                     </td>
-                    <td className="px-4 py-3 text-sm hidden md:table-cell">
-                      {offre.statut === "approuve" ? (
-                        <div className="flex items-center gap-1 text-green-600 font-semibold">
-                          <FaCheckCircleSolid className="w-4 h-4 animate-pulse" />{" "}
-                          Approuvée
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-orange-500 font-semibold">
-                          <FaClock className="w-4 h-4 animate-spin slow-spin" />{" "}
-                          En attente
-                        </div>
-                      )}
+                  </tr>
+                ) : filteredOffres.length === 0 ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-gray-500"
+                      colSpan={5}
+                    >
+                      Aucune offre trouvée.
                     </td>
-                    <td className="px-4 py-3 text-sm hidden lg:table-cell">
-                      {offre.recruteur?.nom ||
-                        (typeof offre.idRecruteur === "object" &&
-                        offre.idRecruteur !== null &&
-                        "name" in offre.idRecruteur
-                          ? offre.idRecruteur.name
-                          : String(offre.idRecruteur || "N/A"))}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      <div className="flex justify-center gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          className="text-blue-500 hover:text-blue-600 focus:outline-none p-1 rounded-md transition-colors"
-                          title="Voir les détails"
-                          onClick={() => openDetailsModal(offre)}
-                        >
-                          <Eye className="w-5 h-5" />
-                        </motion.button>
-                        {offre.statut === "en attente" && (
+                  </tr>
+                ) : (
+                  filteredOffres.map((offre) => (
+                    <motion.tr
+                      key={offre._id}
+                      variants={rowVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
+                    >
+                      <td className="px-4 py-3 text-sm font-medium text-center">
+                        {offre.titre}
+                      </td>
+                      <td className="px-4 py-3 text-sm capitalize hidden sm:table-cell text-center">
+                        {offre.type}
+                      </td>
+                      <td className="px-4 py-3 text-sm hidden md:table-cell text-center">
+                        {offre.statut === "approuve" ? (
+                          <div className="flex items-center justify-center gap-1 text-green-600 font-semibold">
+                            <FaCheckCircleSolid className="w-4 h-4 animate-pulse" />{" "}
+                            Approuvée
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-1 text-orange-500 font-semibold">
+                            <FaClock className="w-4 h-4 animate-spin slow-spin" />{" "}
+                            En attente
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-sm hidden lg:table-cell text-center">
+                        {offre.recruteur?.nom ||
+                          (typeof offre.idRecruteur === "object" &&
+                          offre.idRecruteur !== null &&
+                          "name" in offre.idRecruteur
+                            ? offre.idRecruteur.name
+                            : String(offre.idRecruteur || "N/A"))}
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        <div className="flex justify-center gap-2">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
-                            className="text-green-500 hover:text-green-600 focus:outline-none p-1 rounded-md transition-colors"
-                            title="Approuver"
-                            onClick={() => handleApprove(offre._id!)}
+                            className="text-blue-500 hover:text-blue-600 focus:outline-none p-1 rounded-md transition-colors"
+                            title="Voir les détails"
+                            onClick={() => openDetailsModal(offre)}
                           >
-                            <CheckCircle className="w-5 h-5 animate-pulse" />
+                            <Eye className="w-5 h-5" />
                           </motion.button>
-                        )}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          className="text-red-500 hover:text-red-600 focus:outline-none p-1 rounded-md transition-colors"
-                          title="Supprimer"
-                          onClick={() => handleDelete(offre._id!)}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </motion.button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </AnimatePresence>
-          </tbody>
-        </table>
+                          {offre.statut === "en attente" && (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              className="text-green-500 hover:text-green-600 focus:outline-none p-1 rounded-md transition-colors"
+                              title="Approuver"
+                              onClick={() => handleApprove(offre._id!)}
+                            >
+                              <CheckCircle className="w-5 h-5 animate-pulse" />
+                            </motion.button>
+                          )}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            className="text-red-500 hover:text-red-600 focus:outline-none p-1 rounded-md transition-colors"
+                            title="Supprimer"
+                            onClick={() => handleDelete(offre._id!)}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </motion.button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <AnimatePresence>

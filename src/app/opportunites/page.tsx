@@ -1,16 +1,16 @@
-
+// app/offres/page.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AiOutlinePlus } from "react-icons/ai";
-import { FaEye, FaUser } from "react-icons/fa";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaEye, FaUser, FaSearch } from "react-icons/fa";
 import { Offre as OffreModel } from "@/models/Offre";
 import { useSession } from "next-auth/react";
 import { X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 
 interface OffreWithRecruteurName extends OffreModel {
   recruteurName?: string;
@@ -18,30 +18,36 @@ interface OffreWithRecruteurName extends OffreModel {
 
 const ITEMS_PER_PAGE = 8;
 
+const LoadingSpinner = () => (
+  <div className="flex flex-col items-center justify-center py-20 text-pink-500">
+    <motion.div
+      className="text-4xl"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+    >
+      <AiOutlineLoading3Quarters />
+    </motion.div>
+  </div>
+);
+
 const OffresPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [allOffres, setAllOffres] = useState<OffreWithRecruteurName[]>([]);
-  const [filteredOffres, setFilteredOffres] = useState<
-    OffreWithRecruteurName[]
-  >([]);
+  const [filteredOffres, setFilteredOffres] = useState<OffreWithRecruteurName[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedOffre, setSelectedOffre] =
-    useState<OffreWithRecruteurName | null>(null);
+  const [selectedOffre, setSelectedOffre] = useState<OffreWithRecruteurName | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userId = session?.user?.id;
   const userRoles = session?.user?.role || [];
-  const isEtudiantOrAdmin =
-    userRoles.includes("etudiant") || userRoles.includes("admin");
+  const isEtudiantOrAdmin = userRoles.includes("etudiant") || userRoles.includes("admin");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<"all" | "emploi" | "stage">(
-    "all"
-  );
+  const [activeFilter, setActiveFilter] = useState<"all" | "emploi" | "stage">("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/api/auth/signin?callbackUrl=" + window.location.pathname); // Redirige vers la page de connexion
+      router.push("/api/auth/signin?callbackUrl=" + window.location.pathname);
     }
   }, [status, router]);
 
@@ -76,15 +82,26 @@ const OffresPage = () => {
   }, [fetchOffres, status]);
 
   useEffect(() => {
-    if (activeFilter === "all") {
-      setFilteredOffres(allOffres);
-    } else {
-      setFilteredOffres(
-        allOffres.filter((offre) => offre.type === activeFilter)
+    let currentFiltered = allOffres;
+
+    if (activeFilter !== "all") {
+      currentFiltered = currentFiltered.filter((offre) => offre.type === activeFilter);
+    }
+
+    const lowercasedSearchTerm = searchTerm.toLowerCase();
+    if (lowercasedSearchTerm) {
+      currentFiltered = currentFiltered.filter(
+        (offre) =>
+          offre.titre.toLowerCase().includes(lowercasedSearchTerm) ||
+          offre.description.toLowerCase().includes(lowercasedSearchTerm) ||
+          offre.recruteurName?.toLowerCase().includes(lowercasedSearchTerm) ||
+          offre.type.toLowerCase().includes(lowercasedSearchTerm)
       );
     }
-    setCurrentPage(1); // Reset page on filter change
-  }, [allOffres, activeFilter]);
+
+    setFilteredOffres(currentFiltered);
+    setCurrentPage(1);
+  }, [allOffres, activeFilter, searchTerm]);
 
   const openModal = (offre: OffreWithRecruteurName) => {
     setSelectedOffre(offre);
@@ -104,29 +121,16 @@ const OffresPage = () => {
     hover: { scale: 1.02, transition: { duration: 0.2 } },
   };
 
-  const titleVariants = {
-    initial: { opacity: 0, y: -10 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
   const modalVariants = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.3 } },
+    exit: { opacity: 0, transition: { duration: 0.3 } },
   };
 
   const modalContentVariants = {
-    initial: { scale: 0.95, opacity: 0 },
-    animate: {
-      scale: 1,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100, damping: 20 },
-    },
-    exit: { scale: 0.95, opacity: 0 },
+    hidden: { scale: 0.9, opacity: 0 },
+    visible: { scale: 1, opacity: 1, transition: { duration: 0.3, ease: "easeOut" } },
+    exit: { scale: 0.9, opacity: 0, transition: { duration: 0.2 } },
   };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -141,8 +145,7 @@ const OffresPage = () => {
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
-
-  //envoi email
+  
   const handlePostuler = async () => {
     if (!selectedOffre || !session?.user) return;
   
@@ -167,37 +170,33 @@ const OffresPage = () => {
   
       if (!response.ok) throw new Error('Échec de l\'envoi');
       alert('Candidature envoyée avec succès !');
+      closeModal();
     } catch (error) {
       console.error(error);
       alert('Erreur lors de l\'envoi de la candidature');
     }
   };
-  
 
-  // Rendu conditionnel basé sur l'état de l'authentification
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <p className="text-xl text-pink-500 font-semibold animate-pulse">
-          Chargement... ✨
-        </p>
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex flex-col items-center justify-center">
+        <LoadingSpinner />
       </div>
     );
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex flex-col items-center justify-center">
         <p className="text-lg text-gray-700 mb-4">
           Vous devez être connecté pour voir les offres.
         </p>
-        {/* Vous pouvez ajouter un bouton de connexion ici si vous le souhaitez */}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex flex-col">
       <Navbar className="sticky top-0 z-10" />
       <motion.div
         className="py-12 md:py-16 container mx-auto px-4 sm:px-6 lg:px-8 flex-grow mt-16"
@@ -206,108 +205,111 @@ const OffresPage = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.7, ease: "easeInOut" }}
       >
-        <section className="mb-8 text-center">
-          <motion.h1
-            className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 tracking-tight"
-            variants={titleVariants}
-            initial="initial"
-            animate="animate"
-          >
-            Découvrez nos offres
-          </motion.h1>
-          <p className="text-lg text-gray-600">
-            Explorez les opportunités disponibles.
-          </p>
-        </section>
-
-        <div className="mb-6 flex justify-center space-x-4">
-          <button
-            className={`py-2 px-4 rounded-md text-sm font-semibold ${
-              activeFilter === "all"
-                ? "bg-pink-500 text-white"
-                : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
-            } focus:outline-none focus:ring-2 focus:ring-pink-500`}
-            onClick={() => setActiveFilter("all")}
-          >
-            Toutes
-          </button>
-          <button
-            className={`py-2 px-4 rounded-md text-sm font-semibold ${
-              activeFilter === "emploi"
-                ? "bg-pink-500 text-white"
-                : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
-            } focus:outline-none focus:ring-2 focus:ring-pink-500`}
-            onClick={() => setActiveFilter("emploi")}
-          >
-            Emploi
-          </button>
-          <button
-            className={`py-2 px-4 rounded-md text-sm font-semibold ${
-              activeFilter === "stage"
-                ? "bg-pink-500 text-white"
-                : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
-            } focus:outline-none focus:ring-2 focus:ring-pink-500`}
-            onClick={() => setActiveFilter("stage")}
-          >
-            Stage
-          </button>
+        <div className="flex flex-col sm:flex-row justify-center items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="relative w-full max-w-md">
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Rechercher par titre, description, ou recruteur..."
+              className="w-full pl-10 pr-4 py-2 border border-pink-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-gray-400 text-gray-700 transition-all duration-200 shadow-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex space-x-2">
+            <button
+              className={`py-2 px-4 rounded-md text-sm font-semibold ${
+                activeFilter === "all"
+                  ? "bg-pink-500 text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
+              } focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors duration-200`}
+              onClick={() => setActiveFilter("all")}
+            >
+              Toutes
+            </button>
+            <button
+              className={`py-2 px-4 rounded-md text-sm font-semibold ${
+                activeFilter === "emploi"
+                  ? "bg-pink-500 text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
+              } focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors duration-200`}
+              onClick={() => setActiveFilter("emploi")}
+            >
+              Emploi
+            </button>
+            <button
+              className={`py-2 px-4 rounded-md text-sm font-semibold ${
+                activeFilter === "stage"
+                  ? "bg-pink-500 text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-pink-100 border border-pink-300"
+              } focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors duration-200`}
+              onClick={() => setActiveFilter("stage")}
+            >
+              Stage
+            </button>
+          </div>
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <p className="text-xl text-pink-500 font-semibold animate-pulse">
-              Chargement des offres... ✨
-            </p>
-          </div>
+          <LoadingSpinner />
         ) : error ? (
           <div className="flex justify-center items-center py-20">
             <p className="text-red-500 font-semibold">Erreur : {error}</p>
           </div>
         ) : (
           <section className="mb-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {currentOffres.map((offre) => (
-                <motion.div
-                  key={offre._id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden border border-pink-200 hover:shadow-lg transition duration-200 ease-in-out"
-                  variants={cardVariants}
-                  initial="initial"
-                  animate="animate"
-                  whileHover="hover"
-                  onClick={() => openModal(offre)}
-                >
-                  <div className="p-4 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-md font-semibold text-gray-800 mb-2 line-clamp-2">
-                        {offre.titre}
-                      </h3>
-                      <p className="text-sm text-gray-500 italic flex items-center mb-1">
-                        <FaUser className="mr-2 text-pink-400" />
-                        Recruteur :
-                        <span className="text-pink-500 font-medium">
-                          {offre.recruteurName}
-                        </span>
-                      </p>
-                      <p className="text-sm text-gray-600 mb-2">
-                        Type:{" "}
-                        <span className="font-semibold">{offre.type}</span>
-                      </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {currentOffres.length > 0 ? (
+                currentOffres.map((offre) => (
+                  <motion.div
+                    key={offre._id}
+                    className="bg-white rounded-lg shadow-md overflow-hidden border border-pink-200 hover:shadow-lg transition duration-200 ease-in-out"
+                    variants={cardVariants}
+                    initial="initial"
+                    animate="animate"
+                    whileHover="hover"
+                  >
+                    <div className="p-4 flex flex-col justify-between h-full">
+                      <div>
+                        <h3 className="text-md font-semibold text-gray-800 mb-2 line-clamp-2">
+                          {offre.titre}
+                        </h3>
+                        <p className="text-sm text-gray-500 italic flex items-center mb-1">
+                          <FaUser className="mr-2 text-pink-400" />
+                          Recruteur :
+                          <span className="text-pink-500 font-medium ml-1">
+                            {offre.recruteurName}
+                          </span>
+                        </p>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Type:{" "}
+                          <span className="font-semibold">{offre.type}</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <motion.button
+                          className="flex items-center text-pink-500 font-semibold text-sm px-3 py-1.5 rounded-full hover:bg-pink-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(offre);
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <FaEye className="mr-2" />
+                          <span>Voir</span>
+                        </motion.button>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <button
-                        className="flex items-center text-gray-600 hover:text-blue-500 focus:outline-none text-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openModal(offre);
-                        }}
-                      >
-                        <FaEye className="mr-1 text-blue-400" />
-                        <span className="text-gray-700">Voir</span>
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-10">
+                  <p className="text-gray-600 text-lg">
+                    Aucune offre trouvée pour votre recherche.
+                  </p>
+                </div>
+              )}
             </div>
 
             {totalPages > 1 && (
@@ -357,25 +359,24 @@ const OffresPage = () => {
         <AnimatePresence>
           {isModalOpen && selectedOffre && (
             <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
               variants={modalVariants}
-              initial="initial"
-              animate="animate"
+              initial="hidden"
+              animate="visible"
               exit="exit"
               onClick={closeModal}
             >
               <motion.div
-                className="relative z-10 w-11/12 md:max-w-lg rounded-xl bg-white shadow-lg border border-gray-200 overflow-auto max-h-[90vh]"
+                className="relative z-10 w-11/12 md:max-w-md rounded-xl bg-white shadow-lg border border-gray-200 overflow-auto max-h-[90vh]"
                 variants={modalContentVariants}
-                initial="initial"
-                animate="animate"
+                initial="hidden"
+                animate="visible"
                 exit="exit"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                  <h2 className="text-lg font-semibold text-pink-600 flex items-center">
-                    <AiOutlinePlus className="mr-2 text-pink-500" /> Détail de
-                    l'Offre
+                  <h2 className="text-lg font-semibold text-pink-600">
+                    Détails de l'Offre
                   </h2>
                   <button
                     onClick={closeModal}
@@ -386,44 +387,36 @@ const OffresPage = () => {
                 </div>
 
                 <div className="p-6 space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h3 className="text-xl font-semibold text-gray-800">
                     {selectedOffre.titre}
-                  </h2>
-                  <p className="text-gray-700">{selectedOffre.description}</p>
+                  </h3>
+                  <p className="text-gray-700 whitespace-pre-line">{selectedOffre.description}</p>
                   <p className="text-sm text-gray-600 mb-2">
                     Type:{" "}
                     <span className="font-semibold">{selectedOffre.type}</span>
                   </p>
                   <p className="text-sm text-gray-500 flex items-center">
                     <FaUser className="mr-2 text-pink-400" /> Recruteur:
-                    <span className="font-medium text-pink-500">
+                    <span className="font-medium text-pink-500 ml-1">
                       {selectedOffre.recruteurName}
                     </span>
                   </p>
                   <p className="text-sm text-gray-500">
                     Publiée le:{" "}
-                    {new Date(
-                      selectedOffre.datePublication!
-                    ).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Statut:{" "}
-                    <span className="font-semibold">
-                      {selectedOffre.statut}
-                    </span>
+                    {new Date(selectedOffre.datePublication!).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end items-center space-x-2">
                   <button
                     onClick={closeModal}
-                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-pink-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-pink-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-colors"
                   >
                     Fermer
                   </button>
                   {isEtudiantOrAdmin && (
                     <button
                       onClick={handlePostuler}
-                      className="inline-flex items-center rounded-md border border-pink-300 bg-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+                      className="inline-flex items-center rounded-md border border-transparent bg-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-colors"
                     >
                       Postuler
                     </button>

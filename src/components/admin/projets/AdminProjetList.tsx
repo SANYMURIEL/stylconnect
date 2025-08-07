@@ -14,19 +14,19 @@ import {
 import { CheckCircle } from "lucide-react";
 
 interface Projet {
-    _id?: string;
-    titre: string;
-    description?: string;
-    dateCreation?: string;
-    media?: string;
-    auteurId?: any;
-    auteur?: {
-        _id: string;
-        nom: string;
-        email: string;
-    };
-    likes?: number;
-    statut?: "approuve" | "en attente";
+  _id?: string;
+  titre: string;
+  description?: string;
+  dateCreation?: string;
+  media?: string;
+  auteurId?: any;
+  auteur?: {
+    _id: string;
+    nom: string;
+    email: string;
+  };
+  likes?: number;
+  statut?: "approuve" | "en attente";
 }
 
 const AdminProjetList = () => {
@@ -36,9 +36,8 @@ const AdminProjetList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editProjet, setEditProjet] = useState<Projet | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "en attente" | "approuve"
-  >("all");
+  const [filterStatus, setFilterStatus] =
+    useState<"all" | "en attente" | "approuve">("all");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedProjetDetails, setSelectedProjetDetails] =
     useState<Projet | null>(null);
@@ -262,131 +261,136 @@ const AdminProjetList = () => {
       </div>
 
       {/* Projet List Table */}
-      <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 bg-white flex-1">
-        <table className="min-w-full table-auto">
-          <thead className="bg-pink-50 border-b border-pink-100 text-gray-700">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider">
-                Titre
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
-                Création
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
-                Statut
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
-                Auteur
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence>
-              {loading ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-gray-500"
-                    colSpan={5}
-                  >
-                    Chargement...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-red-500"
-                    colSpan={5}
-                  >
-                    Erreur: {error}
-                  </td>
-                </tr>
-              ) : filteredProjets.length === 0 ? (
-                <tr>
-                  <td
-                    className="px-6 py-4 text-center text-gray-500"
-                    colSpan={5}
-                  >
-                    Aucun projet trouvé.
-                  </td>
-                </tr>
-              ) : (
-                filteredProjets.map((projet) => (
-                  <motion.tr
-                    key={projet._id}
-                    variants={rowVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
-                  >
-                    <td className="px-4 py-3 text-sm font-medium">
-                      {projet.titre}
+      {/* --- RETRAIT DU rounded-xl ici --- */}
+      <div className="overflow-x-auto shadow-md border border-gray-200 bg-white flex-1">
+        {/* --- Ajout de max-h et custom-scrollbar pour afficher 5 éléments et avoir la scrollbar rose --- */}
+        <div className="max-h-[275px] overflow-y-auto custom-scrollbar">
+          <table className="min-w-full table-auto">
+            {/* --- Correction de l'erreur d'hydratation et centrage des en-têtes --- */}
+            <thead className="bg-pink-50 border-b border-pink-100 text-gray-700 sticky top-0 z-10">
+              <tr>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
+                  Titre
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden sm:table-cell">
+                  Création
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden md:table-cell">
+                  Statut
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider hidden lg:table-cell">
+                  Auteur
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-pink-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {loading ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-gray-500"
+                      colSpan={5}
+                    >
+                      Chargement...
                     </td>
-                    <td className="px-4 py-3 text-sm hidden sm:table-cell">
-                      {projet.dateCreation
-                        ? new Date(projet.dateCreation).toLocaleDateString()
-                        : "N/A"}
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-red-500"
+                      colSpan={5}
+                    >
+                      Erreur: {error}
                     </td>
-                    <td className="px-4 py-3 text-sm hidden md:table-cell">
-                      {projet.statut === "approuve" ? (
-                        <div className="flex items-center gap-1 text-green-600 font-semibold">
-                          <FaCheckCircleSolid className="w-4 h-4 animate-pulse" />{" "}
-                          Approuvé
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-orange-500 font-semibold">
-                          <FaClock className="w-4 h-4 animate-spin slow-spin" />{" "}
-                          En attente
-                        </div>
-                      )}
+                  </tr>
+                ) : filteredProjets.length === 0 ? (
+                  <tr>
+                    <td
+                      className="px-6 py-4 text-center text-gray-500"
+                      colSpan={5}
+                    >
+                      Aucun projet trouvé.
                     </td>
-                    <td className="px-4 py-3 text-sm hidden lg:table-cell">
-                      {projet.auteur?.nom ||
-                        (typeof projet.auteurId === "object" &&
-                        projet.auteurId !== null &&
-                        "name" in projet.auteurId
-                          ? projet.auteurId.name
-                          : String(projet.auteurId || "N/A"))}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      <div className="flex justify-center gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          className="text-blue-500 hover:text-blue-600 focus:outline-none p-1 rounded-md transition-colors"
-                          title="Voir les détails"
-                          onClick={() => openDetailsModal(projet)}
-                        >
-                          <Eye className="w-5 h-5" />
-                        </motion.button>
-                        {projet.statut === "en attente" && (
+                  </tr>
+                ) : (
+                  filteredProjets.map((projet) => (
+                    <motion.tr
+                      key={projet._id}
+                      variants={rowVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="border-b border-gray-200 hover:bg-pink-50/5 transition-colors text-gray-800"
+                    >
+                      <td className="px-4 py-3 text-sm font-medium text-center"> {/* Centré */}
+                        {projet.titre}
+                      </td>
+                      <td className="px-4 py-3 text-sm hidden sm:table-cell text-center"> {/* Centré */}
+                        {projet.dateCreation
+                          ? new Date(projet.dateCreation).toLocaleDateString()
+                          : "N/A"}
+                      </td>
+                      <td className="px-4 py-3 text-sm hidden md:table-cell text-center"> {/* Centré */}
+                        {projet.statut === "approuve" ? (
+                          <div className="flex items-center justify-center gap-1 text-green-600 font-semibold"> {/* Ajout de justify-center */}
+                            <FaCheckCircleSolid className="w-4 h-4 animate-pulse" />{" "}
+                            Approuvé
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-1 text-orange-500 font-semibold"> {/* Ajout de justify-center */}
+                            <FaClock className="w-4 h-4 animate-spin slow-spin" />{" "}
+                            En attente
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-sm hidden lg:table-cell text-center"> {/* Centré */}
+                        {projet.auteur?.nom ||
+                          (typeof projet.auteurId === "object" &&
+                          projet.auteurId !== null &&
+                          "name" in projet.auteurId
+                            ? projet.auteurId.name
+                            : String(projet.auteurId || "N/A"))}
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        <div className="flex justify-center gap-2">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
-                            className="text-green-500 hover:text-green-600 focus:outline-none p-1 rounded-md transition-colors"
-                            title="Approuver"
-                            onClick={() => handleApprove(projet._id!)}
+                            className="text-blue-500 hover:text-blue-600 focus:outline-none p-1 rounded-md transition-colors"
+                            title="Voir les détails"
+                            onClick={() => openDetailsModal(projet)}
                           >
-                            <CheckCircle className="w-5 h-5 animate-pulse" />
+                            <Eye className="w-5 h-5" />
                           </motion.button>
-                        )}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          className="text-red-500 hover:text-red-600 focus:outline-none p-1 rounded-md transition-colors"
-                          title="Supprimer"
-                          onClick={() => handleDelete(projet._id!)}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </motion.button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </AnimatePresence>
-          </tbody>
-        </table>
+                          {projet.statut === "en attente" && (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              className="text-green-500 hover:text-green-600 focus:outline-none p-1 rounded-md transition-colors"
+                              title="Approuver"
+                              onClick={() => handleApprove(projet._id!)}
+                            >
+                              <CheckCircle className="w-5 h-5 animate-pulse" />
+                            </motion.button>
+                          )}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            className="text-red-500 hover:text-red-600 focus:outline-none p-1 rounded-md transition-colors"
+                            title="Supprimer"
+                            onClick={() => handleDelete(projet._id!)}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </motion.button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <AnimatePresence>

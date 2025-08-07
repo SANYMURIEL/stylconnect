@@ -11,11 +11,20 @@ import {
   FaBullhorn,
   FaNewspaper,
   FaInfoCircle,
-  FaUserCog,
+  FaTachometerAlt,
   FaBars,
   FaTimes,
-  FaTachometerAlt,
 } from "react-icons/fa";
+import { PiUsersThreeBold } from "react-icons/pi";
+import { motion } from "framer-motion";
+
+const LoadingSpinner = () => (
+  <motion.div
+    className="h-5 w-5 border-2 border-current border-t-transparent text-pink-500 rounded-full"
+    animate={{ rotate: 360 }}
+    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+  />
+);
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -27,44 +36,35 @@ export default function Navbar() {
     setIsClient(true);
   }, []);
 
+  const getDashboardLink = () => {
+    if (session?.user?.role === "admin") {
+      return { href: "/admin/users", label: "Tableau de bord", icon: <PiUsersThreeBold /> };
+    }
+    if (session?.user?.role === "recruteur") {
+      return { href: "/recruteur/offres", label: "Tableau de bord", icon: <FaTachometerAlt /> };
+    }
+    if (session?.user?.role === "etudiant") {
+      return { href: "/etudiant/profil", label: "Tableau de bord", icon: <FaTachometerAlt /> };
+    }
+    return null;
+  };
+
   const navItems = [
     { href: "/", label: "Accueil", icon: <FaHome /> },
     { href: "/creations", label: "Créations", icon: <FaPalette /> },
     { href: "/actualites", label: "Actualités", icon: <FaNewspaper /> },
+    { href: "/opportunites", label: "Opportunités", icon: <FaBullhorn /> },
     { href: "/apropos", label: "À propos", icon: <FaInfoCircle /> },
-    ...(status === "loading" || !isClient
-      ? []
-      : session?.user?.role === "admin"
-      ? [{ href: "/admin/users", label: "Admin", icon: <FaUserCog /> }]
-      : []),
-    ...(status === "loading" || !isClient
-      ? []
-      : session?.user
-      ? [{ href: "/opportunites", label: "Opportunités", icon: <FaBullhorn /> }]
-      : []),
-    ...(status === "loading" || !isClient
-      ? []
-      : session?.user?.role === "recruteur"
-      ? [
-          {
-            href: "/recruteur/offres",
-            label: "Tableau de bord",
-            icon: <FaTachometerAlt />,
-          },
-        ]
-      : []),
-    ...(status === "loading" || !isClient
-      ? []
-      : session?.user?.role === "etudiant"
-      ? [
-          {
-            href: "/etudiant/profil",
-            label: "Tableau de bord",
-            icon: <FaTachometerAlt />,
-          },
-        ]
-      : []),
   ].filter(Boolean);
+
+  const finalNavItems = isClient && session?.user
+    ? [
+      ...navItems.slice(0, 3), // Accueil, Créations, Actualités
+      ...(session.user.role !== 'recruteur' ? [navItems[3]] : []), // Opportunités (sauf si recruteur)
+      ...(getDashboardLink() ? [getDashboardLink()] : []), // Tableau de bord
+      navItems[4], // À propos
+    ]
+    : navItems.filter(item => item.href !== "/opportunites");
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
@@ -72,26 +72,26 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-3xl font-extrabold text-pink-600 tracking-tight"
+          className="text-3xl font-extrabold text-pink-600 tracking-tight whitespace-nowrap"
         >
           Styl’Connect
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex flex-1 justify-center">
-          <div className="flex items-center gap-x-6">
-            {navItems.map(({ href, label, icon }) => (
+          <div className="flex items-center gap-x-4">
+            {finalNavItems.map(({ href, label, icon }) => (
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition font-semibold text-sm ${
+                className={`flex items-center gap-1 px-3 py-2 rounded-full transition-colors duration-200 font-semibold text-sm ${
                   pathname === href
                     ? "bg-pink-100 text-pink-700"
                     : "text-gray-700 hover:text-pink-600 hover:bg-pink-50"
                 }`}
               >
                 {icon}
-                {label}
+                <span className="whitespace-nowrap">{label}</span>
               </Link>
             ))}
           </div>
@@ -100,24 +100,9 @@ export default function Navbar() {
         {/* Auth / Dropdown */}
         <div className="hidden md:flex items-center gap-4">
           {status === "loading" || !isClient ? (
-            <svg
-              className="animate-spin h-5 w-5 text-pink-500"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <div className="flex justify-center items-center h-10 w-24">
+              <LoadingSpinner />
+            </div>
           ) : !session?.user ? (
             <>
               <Link
@@ -149,12 +134,13 @@ export default function Navbar() {
 
       {/* Mobile Nav */}
       {menuOpen && (
-        <div className="md:hidden bg-white px-6 pb-4 shadow-md">
+        <div className="md:hidden bg-white px-6 pb-4 shadow-md transition-all duration-300 ease-in-out">
           <div className="flex flex-col items-center gap-4">
-            {navItems.map(({ href, label, icon }) => (
+            {finalNavItems.map(({ href, label, icon }) => (
               <Link
                 key={href}
                 href={href}
+                onClick={() => setMenuOpen(false)}
                 className={`flex items-center gap-2 w-full px-4 py-2 rounded-md transition font-semibold ${
                   pathname === href
                     ? "bg-pink-100 text-pink-700"
@@ -166,29 +152,14 @@ export default function Navbar() {
               </Link>
             ))}
 
+            <div className="w-full h-px bg-gray-200 my-2"></div>
+
             {status === "loading" || !isClient ? (
               <div className="flex justify-center py-2">
-                <svg
-                  className="animate-spin h-5 w-5 text-pink-500"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                <LoadingSpinner />
               </div>
             ) : !session?.user ? (
-              <>
+              <div className="flex flex-col gap-2 w-full">
                 <Link
                   href="/login"
                   className="w-full px-4 py-2 border border-pink-600 text-pink-600 rounded-md text-center hover:bg-pink-50"
@@ -201,9 +172,9 @@ export default function Navbar() {
                 >
                   Inscription
                 </Link>
-              </>
+              </div>
             ) : (
-              <UserDropdown />
+              <UserDropdown mobile />
             )}
           </div>
         </div>

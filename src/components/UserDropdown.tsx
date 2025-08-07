@@ -5,7 +5,11 @@ import { FiChevronDown, FiLogOut, FiTag } from "react-icons/fi";
 import Image from "next/image";
 import img from "../../public/images/default.png";
 
-export default function UserDropdown() {
+interface UserDropdownProps {
+  mobile?: boolean;
+}
+
+export default function UserDropdown({ mobile = false }: UserDropdownProps) {
   const { data: session } = useSession();
   const user = session?.user;
   const [open, setOpen] = useState(false);
@@ -27,23 +31,25 @@ export default function UserDropdown() {
   if (!user) return null;
 
   return (
-    <div className="relative ml-4" ref={dropdownRef}>
+    <div className={`relative ${mobile ? 'w-full' : 'ml-4'}`} ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-4 py-2 bg-pink-100 hover:bg-pink-200 rounded-full text-sm font-medium text-pink-700 transition"
+        className={`flex items-center justify-between gap-2 px-4 py-2 bg-pink-100 hover:bg-pink-200 rounded-full text-sm font-medium text-pink-700 transition ${mobile ? 'w-full' : ''}`}
       >
-        <Image
-          src={user.image || img}
-          alt="Avatar"
-          width={32}
-          height={32}
-          className="rounded-full object-cover"
-        />
-        <span className="hidden sm:inline">{user.name}</span>
-        <FiChevronDown className="text-pink-500" />
+        <div className="flex items-center gap-2">
+          <Image
+            src={user.image || img}
+            alt="Avatar"
+            width={32}
+            height={32}
+            className="rounded-full object-cover"
+          />
+          <span className="hidden sm:inline-block md:inline-block whitespace-nowrap">{user.name}</span>
+        </div>
+        <FiChevronDown className={`text-pink-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 shadow-xl rounded-xl z-20 p-4 animate-fadeIn">
+        <div className={`absolute ${mobile ? 'static' : 'right-0'} mt-2 w-full md:w-64 bg-white border border-gray-200 shadow-xl rounded-xl z-20 p-4 animate-fadeIn`}>
           <div className="mb-4">
             <p className="text-sm font-semibold text-gray-800">{user.name}</p>
             <p className="text-xs text-gray-500">{user.email}</p>
@@ -63,9 +69,6 @@ export default function UserDropdown() {
                 </span>
               </p>
             )}
-            <p className="text-xs text-gray-400 mt-1">
-              Connecté à : {new Date().toLocaleTimeString()}
-            </p>
           </div>
           <button
             onClick={() => signOut()}

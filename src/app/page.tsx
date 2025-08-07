@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Nécessaire pour les hooks React et Framer Motion
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -6,61 +6,98 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroImage from "../../public/images/essai.png";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "react-feather";
 import Link from "next/link";
+import NewsletterForm from "@/components/NewsletterForm";
 
+// Importation des icônes de React Icons
+import {
+  FaEye,
+  FaUserPlus,
+  FaLink,
+  FaLightbulb,
+  FaArrowRight,
+} from "react-icons/fa";
 
+// Interface pour les actualités
 interface Actualite {
-    _id: string;
-    titre: string;
-    description: string;
-    media?: string;
-    datePublication: string;
+  _id: string;
+  titre: string;
+  description: string;
+  media?: string;
+  datePublication: string;
 }
 
-interface ProjetEtudiant {
-    _id: string;
-    nom: string;
-    image: string;
-    descriptionCourte: string;
-    lien: string;
-}
+// --- Variants d'animation (améliorés) ---
 
-interface Temoignage {
-    _id: string;
-    auteur: string;
-    texte: string;
-    role: string;
-}
+// Animation pour l'entrée générale des sections
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
 
+// Animation pour les éléments individuels à l'intérieur des sections
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+// Variants pour les cartes (actualités, pourquoi Styl'Connect)
 const cardVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.2, ease: "easeIn" } },
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 100, damping: 15 },
+  },
+  hover: { scale: 1.03, boxShadow: "0 10px 20px rgba(0,0,0,0.1)", transition: { duration: 0.3 } },
+  tap: { scale: 0.98 },
 };
 
+// Variants pour les titres de section
 const titleVariants = {
-    initial: { opacity: 0, y: -10 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  hidden: { opacity: 0, y: -20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
+// Variants pour les messages de chargement/erreur
 const loadingErrorVariants = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 0.2 } },
-    exit: { opacity: 0 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0 },
 };
 
-// Données de test pour les projets et témoignages (à remplacer par des données réelles)
-const projetsEtudiantsData: ProjetEtudiant[] = [
-    { _id: "1", nom: "Projet A", image: "/images/placeholder.jpg", descriptionCourte: "Description courte du projet A.", lien: "/projet/a" },
-    { _id: "2", nom: "Projet B", image: "/images/placeholder2.jpg", descriptionCourte: "Description courte du projet B.", lien: "/projet/b" },
-    { _id: "3", nom: "Projet C", image: "/images/placeholder3.jpg", descriptionCourte: "Description courte du projet C.", lien: "/projet/c" },
-];
+// Variante pour les boutons
+const buttonVariants = {
+  initial: { scale: 1, boxShadow: "0px 0px 0px rgba(0,0,0,0)" },
+  hover: {
+    scale: 1.05,
+    boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+    transition: { type: "spring", stiffness: 400, damping: 10 },
+  },
+  tap: { scale: 0.95, boxShadow: "0px 2px 5px rgba(0,0,0,0.2)" },
+};
 
-const temoignagesData: Temoignage[] = [
-    { _id: "t1", auteur: "Alice Dupont", texte: "Styl'Connect m'a permis de montrer mon travail et d'obtenir des opportunités !", role: "Étudiante" },
-    { _id: "t2", auteur: "Jean Martin", texte: "Une plateforme idéale pour découvrir de jeunes talents créatifs.", role: "Recruteur" },
-];
+// Variants pour les icônes de la section "Pourquoi Styl'Connect ?"
+const iconVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", stiffness: 150, damping: 10 },
+  },
+  hover: { rotate: 10, scale: 1.1, transition: { duration: 0.2 } },
+};
 
 export default function HomePage() {
   const [actualites, setActualites] = useState<Actualite[]>([]);
@@ -70,12 +107,14 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fonction pour récupérer les actualités depuis l'API
   const fetchActualites = async () => {
     try {
       const res = await fetch("/api/admin/actualites");
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       setActualites(data);
+      // Sélectionne la première actualité par default si disponible
       setSelectedActualite(data[0] || null);
       setLoading(false);
     } catch (e: any) {
@@ -84,108 +123,114 @@ export default function HomePage() {
     }
   };
 
+  // Lance la récupération des actualités au chargement du composant
   useEffect(() => {
     fetchActualites();
   }, []);
 
+  // Gère le clic sur une actualité pour l'afficher en principal
   const handleActualiteClick = (actu: Actualite) => {
     setSelectedActualite(actu);
   };
 
+  // Nouvelle fonction pour gérer la soumission de la newsletter, passée au composant enfant
+  const handleNewsletterSubmit = async (email: string) => {
+    console.log(`Tentative d'abonnement à la newsletter pour: ${email}`);
+    try {
+      const response = await fetch("/api/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erreur de l'API d'envoi d'e-mail:", errorData.message);
+        throw new Error(errorData.message || "Échec de l'envoi de l'e-mail.");
+      }
+
+      const data = await response.json();
+      console.log("Réponse de l'API d'envoi d'e-mail:", data.message);
+      // Pas besoin de retourner quoi que ce soit ici, le composant enfant gérera le succès.
+    } catch (err: any) {
+      console.error("Erreur lors de la soumission de la newsletter:", err);
+      throw err; // Propage l'erreur pour que NewsletterForm puisse la gérer
+    }
+  };
+
   return (
     <div className="bg-pink-50 min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar /> {/* Barre de navigation */}
       <motion.main
         className="flex-grow"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: 1,
-          transition: { duration: 0.8, ease: "easeInOut" },
-        }}
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants} // Animation globale d'entrée
       >
-        {/* Hero Section */}
-        <section className="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-20">
+        {/* Section Hero */}
+        <motion.section
+          className="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-20 overflow-hidden" // Ajout overflow-hidden
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <div className="grid md:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
             <motion.div
               className="text-center md:text-left space-y-8"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{
-                opacity: 1,
-                x: 0,
-                transition: { duration: 0.7, ease: "easeInOut" },
-              }}
+              variants={itemVariants} // Utilise itemVariants pour le texte
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+              <motion.h1
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight"
+                variants={itemVariants}
+              >
                 Laissez l'inspiration{" "}
                 <span className="text-pink-600">éclore</span> à Styl’Connect
-              </h1>
-              <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">
+              </motion.h1>
+              <motion.p
+                className="text-lg sm:text-xl text-gray-700 leading-relaxed"
+                variants={itemVariants}
+              >
                 La vitrine où la créativité des étudiants du{" "}
                 <strong>CFPD</strong> prend vie. Découvrez, partagez,
                 inspirez-vous.
-              </p>
-              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 pt-4">
-                <a
-                  href="/galerie"
+              </motion.p>
+              <motion.div
+                className="flex flex-wrap justify-center md:justify-start items-center gap-4 pt-4"
+                variants={itemVariants}
+              >
+                <motion.a
+                  href="/creations"
                   className="inline-flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-700 transition-colors duration-300 shadow-md"
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-2.018 8-7.542 8-5.52 0-8.792-3.943-7.518-8z"
-                    />
-                  </svg>
+                  <FaEye className="w-5 h-5" /> {/* Icône React Icons */}
                   Explorer les créations
-                </a>
-                <a
+                </motion.a>
+                <motion.a
                   href="/register"
                   className="inline-flex items-center gap-2 bg-pink-100 text-pink-700 px-6 py-3 rounded-full text-base font-medium hover:bg-pink-200 transition-colors duration-300 shadow-sm"
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <FaUserPlus className="w-5 h-5" /> {/* Icône React Icons */}
                   Rejoindre la communauté
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
             </motion.div>
 
             <motion.div
               className="w-full md:w-[480px] lg:w-[560px] mx-auto"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{
-                opacity: 1,
-                x: 0,
-                transition: { duration: 0.7, ease: "easeInOut" },
-              }}
+              variants={itemVariants} // Utilise itemVariants pour l'image
             >
               <motion.div
-                className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05 }}
+                className="relative rounded-xl overflow-hidden shadow-lg"
+                whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               >
                 <Image
@@ -197,108 +242,31 @@ export default function HomePage() {
               </motion.div>
             </motion.div>
           </div>
-        </section>
+        </motion.section>
 
-        {/* Mise en avant des projets étudiants */}
-        <section className="py-12 px-6 md:px-12 lg:px-20 bg-gray-50">
-          <div className="max-w-6xl mx-auto py-8">
-            <motion.h2
-              className="text-2xl font-bold text-pink-600 mb-6 text-center"
-              variants={titleVariants}
-              initial="initial"
-              animate="animate"
-            >
-              Projets Étudiants en Vedette
-            </motion.h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projetsEtudiantsData.map((projet) => (
-                <motion.div
-                  key={projet._id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                  variants={cardVariants}
-                  initial="initial"
-                  animate="animate"
-                >
-                  <div className="aspect-w-16 aspect-h-9">
-                    <Image
-                      src={projet.image}
-                      alt={projet.nom}
-                      className="object-cover w-full h-full"
-                      width={600}
-                      height={400}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-800 mb-2">
-                      {projet.nom}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {projet.descriptionCourte}
-                    </p>
-                    <Link
-                      href={projet.lien}
-                      className="text-pink-600 hover:text-pink-700 font-medium"
-                    >
-                      Voir plus <ArrowRight className="inline w-4 h-4 ml-1" />
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link
-                href="/creations"
-                className="inline-flex items-center gap-2 bg-pink-500 text-white px-6 py-3 rounded-full text-base font-medium hover:bg-pink-600 transition-colors duration-300 shadow-md"
-              >
-                Explorer toute la galerie <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Pourquoi Styl'Connect ? */}
-        <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">
-          <div className="max-w-3xl mx-auto text-center py-8">
-            <motion.h2
-              className="text-2xl font-bold text-pink-600 mb-6"
-              variants={titleVariants}
-              initial="initial"
-              animate="animate"
-            >
-              Pourquoi choisir Styl'Connect ?
-            </motion.h2>
-            <div className="space-y-4 text-lg text-gray-700">
-              <p>Connectez-vous avec une communauté créative et passionnée.</p>
-              <p>
-                Mettez en valeur votre talent et vos projets auprès d'un public
-                intéressé.
-              </p>
-              <p>Découvrez l'inspiration et les dernières tendances du CFPD.</p>
-            </div>
-            <div className="mt-8">
-              
-            </div>
-          </div>
-        </section>
-
-       
-
-        {/* Section Actualités (existante) */}
-        <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">
+        {/* Section Actualités (avec un nouvel effet de fondu) */}
+        <motion.section
+          className="py-12 px-6 md:px-12 lg:px-20 bg-white"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
           <div className="max-w-6xl mx-auto rounded-xl shadow-lg overflow-hidden">
             <div className="p-8">
               <motion.h2
                 className="text-2xl font-bold text-pink-600 mb-6 text-center"
                 variants={titleVariants}
-                initial="initial"
-                animate="animate"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.5 }}
               >
                 Dernières Actualités
               </motion.h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Actualité Principale (Gauche) */}
-                <div className="lg:order-1">
-                  <AnimatePresence>
+                <motion.div className="lg:order-1" variants={itemVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
+                  <AnimatePresence mode="wait">
                     {loading && (
                       <motion.p
                         className="text-center text-gray-500"
@@ -306,6 +274,7 @@ export default function HomePage() {
                         initial="initial"
                         animate="animate"
                         exit="exit"
+                        key="loading"
                       >
                         Chargement...
                       </motion.p>
@@ -317,6 +286,7 @@ export default function HomePage() {
                         initial="initial"
                         animate="animate"
                         exit="exit"
+                        key="error"
                       >
                         Erreur: {error}
                       </motion.p>
@@ -324,11 +294,13 @@ export default function HomePage() {
                     {!loading && selectedActualite && (
                       <motion.div
                         key={selectedActualite._id}
-                        className="rounded-md overflow-hidden shadow-md"
+                        className="rounded-md overflow-hidden shadow-md cursor-pointer"
                         variants={cardVariants}
-                        initial="initial"
-                        animate="animate"
+                        initial="hidden"
+                        animate="visible"
                         exit="exit"
+                        whileHover="hover"
+                        onClick={() => handleActualiteClick(selectedActualite)}
                       >
                         {selectedActualite.media && (
                           <div className="aspect-w-16 aspect-h-9">
@@ -355,25 +327,26 @@ export default function HomePage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
 
                 {/* Liste des Actualités (Droite) */}
-                <div className="lg:order-2 space-y-4">
+                <motion.div className="lg:order-2 space-y-4" variants={itemVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
                   <AnimatePresence>
                     {!loading &&
                       !error &&
                       actualites.map((actu) => (
                         <motion.div
                           key={actu._id}
-                          className="bg-pink-50 rounded-md shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer flex items-center overflow-hidden"
+                          className="bg-pink-50 rounded-md shadow-sm flex items-center overflow-hidden cursor-pointer"
                           variants={cardVariants}
-                          initial="initial"
-                          animate="animate"
+                          initial="hidden"
+                          animate="visible"
                           exit="exit"
+                          whileHover="hover"
                           onClick={() => handleActualiteClick(actu)}
                         >
                           {actu.media && (
-                            <div className="w-24 h-20 relative overflow-hidden rounded-l-md">
+                            <div className="w-24 h-20 relative overflow-hidden rounded-l-md flex-shrink-0">
                               <img
                                 src={actu.media}
                                 alt={actu.titre}
@@ -381,7 +354,7 @@ export default function HomePage() {
                               />
                             </div>
                           )}
-                          <div className="p-3">
+                          <div className="p-3 flex-grow">
                             <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
                               {actu.titre}
                             </h4>
@@ -395,22 +368,117 @@ export default function HomePage() {
                       ))}
                   </AnimatePresence>
                   {!loading && !error && (
-                    <div className="text-right mt-4">
-                      <a
+                    <motion.div className="text-right mt-4" variants={itemVariants}>
+                      <Link
                         href="/actualites"
                         className="inline-flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200"
+                        passHref
                       >
                         Toutes les actualités
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-                    </div>
+                        <FaArrowRight className="w-4 h-4" />
+                      </Link>
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
+        </motion.section>
+
+        {/* Pourquoi Styl'Connect ? - Section améliorée */}
+        <motion.section
+          className="py-12 px-6 md:px-12 lg:px-20 bg-gray-50"
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <div className="max-w-6xl mx-auto text-center py-8">
+            <motion.h2
+              className="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-12"
+              variants={titleVariants}
+            >
+              Pourquoi choisir Styl'Connect ?
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Carte 1: Connectivité */}
+              <motion.div
+                className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center"
+                variants={cardVariants}
+                whileHover="hover"
+              >
+                <motion.div
+                  className="p-4 bg-pink-100 rounded-full mb-4"
+                  variants={iconVariants}
+                  whileHover="hover"
+                >
+                  <FaLink className="w-12 h-12 text-pink-500" />
+                </motion.div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Connectivité Sans Limite
+                </h3>
+                <p className="text-gray-600 text-base">
+                  Rejoignez une communauté dynamique d'étudiants créatifs et de
+                  professionnels passionnés. Échangez des idées, collaborez et
+                  bâtissez votre réseau.
+                </p>
+              </motion.div>
+
+              {/* Carte 2: Vitrine de Talents */}
+              <motion.div
+                className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center"
+                variants={cardVariants}
+                whileHover="hover"
+              >
+                <motion.div
+                  className="p-4 bg-pink-100 rounded-full mb-4"
+                  variants={iconVariants}
+                  whileHover="hover"
+                >
+                  <FaEye className="w-12 h-12 text-pink-500" />
+                </motion.div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Mettez Votre Talent en Lumière
+                </h3>
+                <p className="text-gray-600 text-base">
+                  Exposez vos projets et créations uniques à un public large et
+                  ciblé. Obtenez de la reconnaissance et des opportunités
+                  professionnelles.
+                </p>
+              </motion.div>
+
+              {/* Carte 3: Inspiration Continue */}
+              <motion.div
+                className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center"
+                variants={cardVariants}
+                whileHover="hover"
+              >
+                <motion.div
+                  className="p-4 bg-pink-100 rounded-full mb-4"
+                  variants={iconVariants}
+                  whileHover="hover"
+                >
+                  <FaLightbulb className="w-12 h-12 text-pink-500" />
+                </motion.div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Source d'Inspiration Quotidienne
+                </h3>
+                <p className="text-gray-600 text-base">
+                  Explorez une galerie riche et variée des dernières tendances
+                  et innovations du CFPD. Laissez-vous inspirer et développez
+                  vos compétences.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Section Newsletter - Maintenant avec un arrière-plan blanc */}
+        <section className="py-12 px-6 md:px-12 lg:px-20 bg-white">
+          <NewsletterForm onSubmit={handleNewsletterSubmit} />
         </section>
       </motion.main>
+      {/* Le Footer prend maintenant la couleur et l'ombre précédemment sur la newsletter */}
       <Footer />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { FaMapMarkerAlt, FaBuilding } from "react-icons/fa";
 import Image from "next/image";
-
+import Map from "@/components/Map";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
@@ -145,13 +145,7 @@ export default function AproposPage() {
                 Rouge.
               </p>
               <div className="mt-4">
-                <Image
-                  src={plan}
-                  alt="Localisation CFPD"
-                  width={500}
-                  height={300}
-                  className="rounded-lg"
-                />
+                <Map/>
               </div>
             </div>
           </div>

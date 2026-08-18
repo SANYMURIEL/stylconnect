@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/admin/Sidebar";
 import AdminOffreList from "@/components/admin/offres/AdminOffreList";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 
 const AdminOffresPage = () => {
@@ -28,7 +28,7 @@ const AdminOffresPage = () => {
     }
   }, [session, status, router]);
 
-  const loadingVariants = {
+  const loadingVariants: Variants = {
     initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
     exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
@@ -70,7 +70,7 @@ const AdminOffresPage = () => {
     );
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     initial: { opacity: 0, x: 20 },
     animate: {
       opacity: 1,

@@ -6,11 +6,11 @@ import mongoose from 'mongoose';
 
 export async function POST(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDB();
-    const { id } = context.params;
+    const { id } = await context.params;
     const { userId } = await req.json();
 
     if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -40,11 +40,11 @@ export async function POST(
 
 export async function DELETE(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDB();
-    const { id } = context.params;
+    const { id } = await context.params;
     const { userId } = await req.json();
 
     if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {

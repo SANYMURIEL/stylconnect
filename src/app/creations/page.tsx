@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { AiOutlineHeart, AiFillHeart, AiOutlinePlus, AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaEye, FaUser, FaSearch } from "react-icons/fa";
 import { useSession } from "next-auth/react";
@@ -189,26 +189,26 @@ const CreationsPage = () => {
     document.body.style.overflow = "auto";
   };
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
     hover: { scale: 1.05, transition: { duration: 0.2 } },
     tap: { scale: 0.95 },
   };
 
-  const likeButtonVariants = {
+  const likeButtonVariants: Variants = {
     initial: { scale: 1 },
     tap: { scale: 1.2, rotate: 15 },
     hover: { scale: 1.1 },
   };
 
-  const viewButtonVariants = {
+  const viewButtonVariants: Variants = {
     initial: { scale: 1 },
     hover: { scale: 1.1, color: "#EC4899" },
     tap: { scale: 0.9 },
   };
 
-  const titleVariants = {
+  const titleVariants: Variants = {
     initial: { opacity: 0, y: -20 },
     animate: {
       opacity: 1,
@@ -217,13 +217,13 @@ const CreationsPage = () => {
     },
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
   };
 
-  const modalContentVariants = {
+  const modalContentVariants: Variants = {
     initial: { scale: 0.9, y: 50 },
     animate: {
       scale: 1,

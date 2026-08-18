@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SidebarEtudiant from "@/components/etudiant/SidebarEtudiant"; // Créez ce composant si vous ne l'avez pas
 import ProjetEtudiantList from "@/components/etudiant/projets/ProjetEtudiantList";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { LightBulbIcon } from "@heroicons/react/24/outline";
 
 const EtudiantProjetsPage = () => {
@@ -28,7 +28,7 @@ const EtudiantProjetsPage = () => {
     }
   }, [session, status, router]);
 
-  const loadingVariants = {
+  const loadingVariants: Variants = {
     initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
     exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
@@ -43,8 +43,8 @@ const EtudiantProjetsPage = () => {
         animate="animate"
         exit="exit"
       >
-        Chargement des projets...
-        <LightBulbIcon className="ml-2 w-6 h-6 animate-pulse" />
+        <LightBulbIcon className="mr-3 w-8 h-8 animate-spin text-pink-500" />
+        Chargement de vos projets...
       </motion.div>
     );
   }
@@ -57,7 +57,7 @@ const EtudiantProjetsPage = () => {
     );
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     initial: { opacity: 0, x: 20 },
     animate: {
       opacity: 1,

@@ -8,11 +8,11 @@ import ChangePasswordForm from "@/components/etudiant/profil/ChangePasswordForm"
 import SidebarRecruteur from "@/components/recruteur/SidebarRecruteur";
 import ProfilFormRecruteur from "@/components/recruteur/profil/ProfilForm";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { FaUserCog, FaShieldAlt } from "react-icons/fa";
 import { AiOutlineLoading, AiOutlineWarning } from "react-icons/ai";
 
-const containerVariants = {
+const containerVariants: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: {
     opacity: 1,

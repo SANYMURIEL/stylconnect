@@ -2,7 +2,7 @@ import { connectToDB } from "@/lib/mongodb";
 import { Projet } from "@/models/Projet";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Assurez-vous que ce chemin est correct
+import { authOptions } from "@/lib/auth";
 
 interface RouteParams {
     id: string;
@@ -15,9 +15,9 @@ interface RouteParams {
  */
 export const GET = async (
     request: Request,
-    { params }: { params: RouteParams }
+    { params }: { params: Promise<RouteParams> }
 ) => {
-    const { id } = params;
+    const { id } = await params;
     try {
         const session = await getServerSession(authOptions);
         // Vérifie si l'utilisateur est un administrateur
@@ -45,9 +45,9 @@ export const GET = async (
  */
 export const PUT = async (
     request: Request,
-    { params }: { params: RouteParams }
+    { params }: { params: Promise<RouteParams> }
 ) => {
-    const { id } = params;
+    const { id } = await params;
     // Récupère toutes les données envoyées, y compris le statut
     const { titre, description, media, statut, auteurId, likes } = await request.json();
 
@@ -93,9 +93,9 @@ export const PUT = async (
  */
 export const DELETE = async (
     request: Request,
-    { params }: { params: RouteParams }
+    { params }: { params: Promise<RouteParams> }
 ) => {
-    const { id } = params;
+    const { id } = await params;
     try {
         const session = await getServerSession(authOptions);
         // Vérifie si l'utilisateur est un administrateur

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Pencil, Trash2, Plus, Search } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import ModalOffreForm from "@/components/recruteur/offres/ModalOffreForm";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
@@ -87,7 +87,7 @@ const OffreList = () => {
     (offre) => offre.statut === "approuve"
   ).length;
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, y: 20 },
     animate: {
       opacity: 1,

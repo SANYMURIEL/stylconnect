@@ -3,7 +3,7 @@ import { connectToDB } from "@/lib/mongodb";
 import { Offre } from "@/models/Offre";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 interface RouteParams {
   id: string;
@@ -12,9 +12,9 @@ interface RouteParams {
 // Récupérer une offre par ID
 export const GET = async (
   request: Request,
-  { params }: { params: RouteParams }
+  { params }: { params: Promise<RouteParams> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const offre = await Offre.findById(id);
@@ -37,9 +37,9 @@ export const GET = async (
 // Modifier une offre par ID
 export const PUT = async (
   request: Request,
-  { params }: { params: RouteParams }
+  { params }: { params: Promise<RouteParams> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   const { titre, description, type } = await request.json();
 
   if (!titre || !description || !type) {
@@ -79,9 +79,9 @@ export const PUT = async (
 // Supprimer une offre par ID
 export const DELETE = async (
   request: Request,
-  { params }: { params: RouteParams }
+  { params }: { params: Promise<RouteParams> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const offreToDelete = await Offre.findById(id);

@@ -1,7 +1,7 @@
 // app/api/etudiant/profile/[id]/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { connectToDB } from "@/lib/mongodb";
 import { User } from "@/models/User"; // Assurez-vous que votre modèle User est correctement importé
 
@@ -9,8 +9,8 @@ interface RouteParams {
   id: string; // L'ID de l'utilisateur à modifier, passé dans l'URL
 }
 
-export const PUT = async (req: Request, { params }: { params: RouteParams }) => {
-  const { id } = params; // Récupère l'ID de l'utilisateur depuis les paramètres de l'URL
+export const PUT = async (req: Request, { params }: { params: Promise<RouteParams> }) => {
+  const { id } = await params; // Récupère l'ID de l'utilisateur depuis les paramètres de l'URL
 
   try {
     const session = await getServerSession(authOptions);

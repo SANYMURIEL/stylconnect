@@ -3,7 +3,7 @@ import { connectToDB } from "@/lib/mongodb";
 import { Offre } from "@/models/Offre";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Assurez-vous que ce chemin est correct
+import { authOptions } from "@/lib/auth";
 
 /**
  * @route GET /api/admin/offres

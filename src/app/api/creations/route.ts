@@ -11,8 +11,8 @@ export async function GET() {
             .populate('auteurId', 'name')
             .lean();
 
-        const formattedProjets = projets.map(projet => {
-            const likesBy = projet.likesBy?.map(id => id.toString()) || [];
+        const formattedProjets = projets.map((projet: any) => {
+            const likesBy = projet.likesBy?.map((id: any) => id.toString()) || [];
             return {
                 ...projet,
                 likesBy: likesBy,

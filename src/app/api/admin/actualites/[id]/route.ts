@@ -7,9 +7,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const actualite = await Actualite.findById(id);
@@ -26,9 +26,9 @@ export const GET = async (
 // Modifier une actualité par ID
 export const PUT = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   const { titre, description, media } = await request.json();
 
   if (!titre || !description) {
@@ -57,9 +57,9 @@ export const PUT = async (
 // Supprimer une actualité par ID
 export const DELETE = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const deletedActualite = await Actualite.findByIdAndDelete(id);

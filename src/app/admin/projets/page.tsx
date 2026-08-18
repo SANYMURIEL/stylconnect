@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/admin/Sidebar";
 import AdminProjetList from "@/components/admin/projets/AdminProjetList";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 // Importez LightbulbIcon correctement
 import { FaLightbulb }  from "react-icons/fa";
 
@@ -29,7 +29,7 @@ const AdminProjetsPage = () => {
     }
   }, [session, status, router]);
 
-  const loadingVariants = {
+  const loadingVariants: Variants = {
     initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
     exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
@@ -71,7 +71,7 @@ const AdminProjetsPage = () => {
     );
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     initial: { opacity: 0, x: 20 },
     animate: {
       opacity: 1,

@@ -2,7 +2,7 @@
 "use client"; // Necessary for React hooks and Framer Motion
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { FaEnvelope, FaPaperPlane, FaCheckCircle, FaExclamationCircle } from "react-icons/fa"; // Ajout de nouvelles icônes
 import Image from "next/image"; // Import Next.js Image component
 
@@ -11,18 +11,18 @@ interface NewsletterFormProps {
 }
 
 // Variants for Framer Motion animations
-const formContainerVariants = {
+const formContainerVariants: Variants = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.2 } },
   whileInView: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const titleVariants = {
+const titleVariants: Variants = {
   initial: { opacity: 0, y: -10 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-const buttonVariants = {
+const buttonVariants: Variants = {
   initial: { scale: 1 },
   hover: { scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 10 } },
   tap: { scale: 0.95 }

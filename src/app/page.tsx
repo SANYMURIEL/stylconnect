@@ -5,7 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import HeroImage from "../../public/images/essai.png";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import Link from "next/link";
 import NewsletterForm from "@/components/NewsletterForm";
 
@@ -30,7 +30,7 @@ interface Actualite {
 // --- Variants d'animation (améliorés) ---
 
 // Animation pour l'entrée générale des sections
-const sectionVariants = {
+const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
     opacity: 1,
@@ -46,13 +46,13 @@ const sectionVariants = {
 };
 
 // Animation pour les éléments individuels à l'intérieur des sections
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 // Variants pour les cartes (actualités, pourquoi Styl'Connect)
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.95 },
   visible: {
     opacity: 1,
@@ -65,20 +65,20 @@ const cardVariants = {
 };
 
 // Variants pour les titres de section
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: -20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 // Variants pour les messages de chargement/erreur
-const loadingErrorVariants = {
+const loadingErrorVariants: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1, transition: { duration: 0.2 } },
   exit: { opacity: 0 },
 };
 
 // Variante pour les boutons
-const buttonVariants = {
+const buttonVariants: Variants = {
   initial: { scale: 1, boxShadow: "0px 0px 0px rgba(0,0,0,0)" },
   hover: {
     scale: 1.05,
@@ -89,7 +89,7 @@ const buttonVariants = {
 };
 
 // Variants pour les icônes de la section "Pourquoi Styl'Connect ?"
-const iconVariants = {
+const iconVariants: Variants = {
   hidden: { opacity: 0, scale: 0.8 },
   visible: {
     opacity: 1,

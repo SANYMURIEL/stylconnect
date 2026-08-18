@@ -6,12 +6,12 @@ import SidebarEtudiant from "@/components/etudiant/SidebarEtudiant";
 import ProfilForm from "@/components/etudiant/profil/ProfilForm";
 import ChangePasswordForm from "@/components/etudiant/profil/ChangePasswordForm";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { FaUserCog } from "react-icons/fa";
 import { AiOutlineLoading, AiOutlineWarning } from "react-icons/ai";
 import { FaShieldAlt } from "react-icons/fa";
 
-const containerVariants = {
+const containerVariants: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: {
     opacity: 1,

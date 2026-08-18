@@ -17,16 +17,23 @@ interface Offre {
 interface AdminModalOffreFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
-  editOffre: Offre | null;
+  onSave?: () => void;
+  onOffreUpdated?: () => void;
+  editOffre?: Offre | null;
+  initialOffre?: Offre | null;
 }
 
 const AdminModalOffreForm = ({
   isOpen,
   onClose,
   onSave,
+  onOffreUpdated,
   editOffre,
+  initialOffre,
 }: AdminModalOffreFormProps) => {
+  const targetOffre = editOffre || initialOffre;
+  const notifySave = onSave || onOffreUpdated || (() => {});
+
   const [form, setForm] = useState({
     titre: "",
     description: "",
@@ -37,13 +44,13 @@ const AdminModalOffreForm = ({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (editOffre) {
+    if (targetOffre) {
       setForm({
-        titre: editOffre.titre,
-        description: editOffre.description,
-        type: editOffre.type,
-        idRecruteur: editOffre.idRecruteur || "",
-        statut: editOffre.statut || "en attente",
+        titre: targetOffre.titre,
+        description: targetOffre.description,
+        type: targetOffre.type,
+        idRecruteur: targetOffre.idRecruteur || "",
+        statut: targetOffre.statut || "en attente",
       });
     } else {
       setForm({
@@ -54,7 +61,7 @@ const AdminModalOffreForm = ({
         statut: "en attente",
       });
     }
-  }, [editOffre]);
+  }, [targetOffre]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -64,29 +71,40 @@ const AdminModalOffreForm = ({
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
-    const payload = {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!form.titre || !form.description || !form.type) {
+      alert("Le titre, la description et le type sont requis.");
+      return;
+    }
+
+    const payload: any = {
       titre: form.titre,
       description: form.description,
       type: form.type,
-      idRecruteur: form.idRecruteur,
       statut: form.statut,
     };
-
-    const url = editOffre
-      ? `/api/admin/offres/${editOffre._id}`
-      : "/api/admin/offres";
-    const method = editOffre ? "PUT" : "POST";
+    if (form.idRecruteur) {
+      payload.idRecruteur = form.idRecruteur;
+    }
 
     try {
+      const url = targetOffre?._id
+        ? `/api/admin/offres/${targetOffre._id}`
+        : "/api/admin/offres";
+      const method = targetOffre?._id ? "PUT" : "POST";
+
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
       if (res.ok) {
-        onSave();
+        notifySave();
         onClose();
       } else {
         const error = await res.json();

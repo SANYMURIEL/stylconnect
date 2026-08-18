@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Trash2, Plus, Search, Eye } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import AdminModalProjetForm from "./AdminModalProjetForm";
 import AdminProjetDetailsModal from "./AdminProjetDetailsModal";
 
@@ -149,7 +149,7 @@ const AdminProjetList = () => {
     (projet) => projet.statut === "approuve"
   ).length;
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, y: 20 },
     animate: {
       opacity: 1,
@@ -158,7 +158,7 @@ const AdminProjetList = () => {
     },
   };
 
-  const rowVariants = {
+  const rowVariants: Variants = {
     initial: { opacity: 0, x: -20 },
     animate: {
       opacity: 1,

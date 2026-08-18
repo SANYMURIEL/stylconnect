@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import {
   FaUser,
   FaEnvelope,
-  FaBuilding,
   FaCheck,
   FaTimes,
   FaPencilAlt,
@@ -24,7 +22,6 @@ interface User {
 
 const ProfilForm = () => {
   const { data: session, update } = useSession();
-  const router = useRouter();
   const [userData, setUserData] = useState<User>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +50,7 @@ const ProfilForm = () => {
               }`
             );
           }
-        } catch (err: any) {
+        } catch {
           setError("Impossible de contacter le serveur.");
         } finally {
           setLoading(false);
@@ -138,7 +135,7 @@ const ProfilForm = () => {
           }`
         );
       }
-    } catch (err) {
+    } catch {
       alert("Erreur de connexion lors de la mise à jour.");
     } finally {
       setIsUpdating(false);

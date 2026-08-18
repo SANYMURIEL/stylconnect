@@ -48,7 +48,7 @@ const ChangePasswordForm = () => {
           data.message || "Erreur lors de la mise à jour du mot de passe."
         );
       }
-    } catch (err) {
+    } catch {
       setError("Erreur de connexion lors de la mise à jour du mot de passe.");
     } finally {
       setIsLoading(false);

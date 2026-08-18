@@ -2,17 +2,22 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaEye, FaUser, FaSearch } from "react-icons/fa";
-import { Offre as OffreModel } from "@/models/Offre";
 import { useSession } from "next-auth/react";
 import { X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from 'next/navigation';
-
-interface OffreWithRecruteurName extends OffreModel {
+interface OffreWithRecruteurName {
+  _id: string;
+  titre: string;
+  description: string;
+  type: string;
+  datePublication: string;
+  statut?: string;
+  idRecruteur?: any;
   recruteurName?: string;
 }
 
@@ -38,8 +43,8 @@ const OffresPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOffre, setSelectedOffre] = useState<OffreWithRecruteurName | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userRoles = session?.user?.role || [];
-  const isEtudiantOrAdmin = userRoles.includes("etudiant") || userRoles.includes("admin");
+  const userRole = session?.user?.role;
+  const isEtudiantOrAdmin = userRole === "etudiant" || userRole === "admin";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | "emploi" | "stage">("all");
@@ -115,19 +120,19 @@ const OffresPage = () => {
     document.body.style.overflow = "auto";
   };
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
     hover: { scale: 1.02, transition: { duration: 0.2 } },
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3 } },
     exit: { opacity: 0, transition: { duration: 0.3 } },
   };
 
-  const modalContentVariants = {
+  const modalContentVariants: Variants = {
     hidden: { scale: 0.9, opacity: 0 },
     visible: { scale: 1, opacity: 1, transition: { duration: 0.3, ease: "easeOut" } },
     exit: { scale: 0.9, opacity: 0, transition: { duration: 0.2 } },

@@ -11,10 +11,7 @@ interface ProjetEtudiant {
   titre: string;
   description?: string;
   media?: string;
-  auteurId: string;
-  // dateCreation?: Date; // Géré automatiquement
-  // likes?: number;      // Géré potentiellement ailleurs
-  // statut?: 'approuve' | 'en attente'; // Géré potentiellement ailleurs
+  auteurId?: string;
 }
 
 interface ModalProjetEtudiantFormProps {
@@ -43,7 +40,7 @@ const ModalProjetEtudiantForm = ({
 
   useEffect(() => {
     if (session?.user?.id) {
-      setForm((prevForm) => ({ ...prevForm, auteurId: session.user.id }));
+      setForm((prevForm) => ({ ...prevForm, auteurId: session.user.id || "" }));
     }
   }, [session?.user?.id]);
 
@@ -53,7 +50,7 @@ const ModalProjetEtudiantForm = ({
         titre: editProjet.titre,
         description: editProjet.description || "",
         media: editProjet.media || "",
-        auteurId: editProjet.auteurId,
+        auteurId: editProjet.auteurId || "",
       });
       setSelectedImage(null);
     } else {

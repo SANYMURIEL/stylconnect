@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { motion, AnimatePresence, useAnimation, Variants } from "framer-motion";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 
 interface Actualite {
@@ -15,7 +15,7 @@ interface Actualite {
   datePublication: string;
 }
 
-const cardVariants = {
+const cardVariants: Variants = {
   initial: { opacity: 0, x: 50 },
   animate: {
     opacity: 1,
@@ -29,7 +29,7 @@ const cardVariants = {
   },
 };
 
-const sectionVariants = {
+const sectionVariants: Variants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
@@ -37,12 +37,12 @@ const sectionVariants = {
   },
 };
 
-const titleVariants = {
+const titleVariants: Variants = {
   initial: { opacity: 0, y: -10 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-const loadingErrorVariants = {
+const loadingErrorVariants: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1, transition: { duration: 0.2 } },
   exit: { opacity: 0 },
@@ -189,7 +189,7 @@ export default function ActualitesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                           {actu.media && (
                             <div className="aspect-w-16 aspect-h-9 relative rounded-lg overflow-hidden">
-                              <img
+                              <Image
                                 src={actu.media}
                                 alt={actu.titre}
                                 className="object-cover w-full h-full"

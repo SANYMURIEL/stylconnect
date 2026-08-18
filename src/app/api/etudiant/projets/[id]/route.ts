@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const projet = await Projet.findById(id).populate('auteurId', 'username'); // Peupler le nom d'utilisateur de l'auteur
@@ -22,9 +22,9 @@ export const GET = async (
 
 export const PUT = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   const { titre, description, media, statut } = await request.json(); // Ajoutez la description ici
 
   if (!titre) {
@@ -52,9 +52,9 @@ export const PUT = async (
 
 export const DELETE = async (
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const { id } = params;
+  const { id } = await params;
   try {
     await connectToDB();
     const deletedProjet = await Projet.findByIdAndDelete(id);

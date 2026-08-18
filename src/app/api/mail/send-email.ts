@@ -1,7 +1,7 @@
 import transporter from '@/lib/nodemailer';
 import { getSession } from 'next-auth/react';
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   const session = await getSession({ req });
   
   // Vérification de l'authentification et du rôle

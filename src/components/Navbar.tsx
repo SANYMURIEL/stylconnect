@@ -26,7 +26,11 @@ const LoadingSpinner = () => (
   />
 );
 
-export default function Navbar() {
+interface NavbarProps {
+  className?: string;
+}
+
+export default function Navbar({ className = "" }: NavbarProps) {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -38,36 +42,37 @@ export default function Navbar() {
 
   const getDashboardLink = () => {
     if (session?.user?.role === "admin") {
-      return { href: "/admin/users", label: "Tableau de bord", icon: <PiUsersThreeBold /> };
+      return "/admin/users";
     }
     if (session?.user?.role === "recruteur") {
-      return { href: "/recruteur/offres", label: "Tableau de bord", icon: <FaTachometerAlt /> };
+      return "/recruteur/offres";
     }
-    if (session?.user?.role === "etudiant") {
-      return { href: "/etudiant/profil", label: "Tableau de bord", icon: <FaTachometerAlt /> };
-    }
-    return null;
+    return "/etudiant/projets";
   };
 
   const navItems = [
-    { href: "/", label: "Accueil", icon: <FaHome /> },
-    { href: "/creations", label: "Créations", icon: <FaPalette /> },
-    { href: "/actualites", label: "Actualités", icon: <FaNewspaper /> },
-    { href: "/opportunites", label: "Opportunités", icon: <FaBullhorn /> },
-    { href: "/apropos", label: "À propos", icon: <FaInfoCircle /> },
-  ].filter(Boolean);
+    { href: "/", label: "Accueil", icon: <FaHome className="w-5 h-5 mr-2" /> },
+    { href: "/creations", label: "Créations", icon: <FaPalette className="w-5 h-5 mr-2" /> },
+    { href: "/opportunites", label: "Opportunités", icon: <FaBullhorn className="w-5 h-5 mr-2" /> },
+    { href: "/actualites", label: "Actualités", icon: <FaNewspaper className="w-5 h-5 mr-2" /> },
+    { href: "/a-propos", label: "À propos", icon: <FaInfoCircle className="w-5 h-5 mr-2" /> },
+  ];
 
-  const finalNavItems = isClient && session?.user
-    ? [
-      ...navItems.slice(0, 3), // Accueil, Créations, Actualités
-      ...(session.user.role !== 'recruteur' ? [navItems[3]] : []), // Opportunités (sauf si recruteur)
-      ...(getDashboardLink() ? [getDashboardLink()] : []), // Tableau de bord
-      navItems[4], // À propos
-    ]
-    : navItems.filter(item => item.href !== "/opportunites");
+  const finalNavItems = [
+    ...navItems,
+    ...(session?.user
+      ? [
+          {
+            href: getDashboardLink(),
+            label: "Dashboard",
+            icon: <FaTachometerAlt className="w-5 h-5 mr-2" />,
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <header className={`fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm ${className}`}>
       <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link

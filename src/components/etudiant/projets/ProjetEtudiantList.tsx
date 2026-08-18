@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Pencil, Trash2, Plus, Search } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import ModalProjetEtudiantForm from "@/components/etudiant/projets/ModalProjetEtudiantForm";
 import { LightBulbIcon } from "@heroicons/react/24/outline"; // Icône pour les projets
 import { FaCheckCircle, FaClock } from "react-icons/fa";
@@ -95,7 +95,7 @@ const ProjetEtudiantList = () => {
     (projet) => projet.statut === "approuve"
   ).length;
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, y: 20 },
     animate: {
       opacity: 1,

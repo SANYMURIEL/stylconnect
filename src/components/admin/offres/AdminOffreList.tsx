@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Trash2, Plus, Search, Eye } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import AdminModalOffreForm from "./AdminModalOffreForm";
 import AdminOffreDetailsModal from "./AdminOffreDetailsModal";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
@@ -143,7 +143,7 @@ const AdminOffreList = () => {
     (offre) => offre.statut === "approuve"
   ).length;
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     initial: { opacity: 0, y: 20 },
     animate: {
       opacity: 1,
@@ -152,7 +152,7 @@ const AdminOffreList = () => {
     },
   };
 
-  const rowVariants = {
+  const rowVariants: Variants = {
     initial: { opacity: 0, x: -20 },
     animate: {
       opacity: 1,
